@@ -8,69 +8,44 @@ canvas { display: block; }
 #controls {
   margin-bottom: 10px;
 }
-#carImageContainer {
+#croppedImageContainer {
   margin-top: 10px;
 }
-#carImage {
-  width: 600px; /* Adjust as needed */
-  /*height: 400px; /* Adjust as needed */
-  object-fit: cover; /* Prevents image distortion */
-  border: 1px solid black;
-}
-#croppedImage {  /* Style for the cropped image display */
-  margin-top: 10px;
-  max-width: 600px; /* Prevent image from overflowing its container */
+#croppedImage {
+  max-width: 100%;
   height: auto;
 }
 </style>
 </head>
 <body>
 
-
 <div id="controls">
-  Image URL: <input type="text" id="imageURL" value="https://upload.wikimedia.org/wikipedia/commons/5/55/JDV584V_1980_Triumph_Spitfire_1500.jpg" size="50">
+  Image URL: <input type="text" id="imageURL" value="https://via.placeholder.com/600x400" size="50">
   <button onclick="loadImage()">Load Image</button>
-  <button onclick="cropImage(1)">Make Image 1</button>
-  <button onclick="cropImage(2)">Make Image 2</button>
-  <button onclick="cropImage(3)">Make Image 3</button>
-  <button onclick="cropImage(4)">Make Image 4</button>
-  <button onclick="cropImage(5)">Make Image 5</button>
-</div>
+  <button onclick="cropImage()">Crop</button> </div>
 
 <canvas id="imageCanvas"></canvas>
-<div id="carImageContainer">
-  <img id="carImage" alt="Cropped Image">
+<div id="croppedImageContainer">
+  <img id="croppedImage" alt="Cropped Image">
 </div>
-
-<div id="croppedImages">
-  <img id="Image1" alt="Image 1">
-  <img id="Image2" alt="Image 2">
-  <img id="Image3" alt="Image 3">
-  <img id="Image4" alt="Image 4">
-  <img id="Image5" alt="Image 5">
-</div>
-
 
 <script>
 const canvas = document.getElementById('imageCanvas');
 const ctx = canvas.getContext('2d');
-let carImage = document.getElementById("carImage");
-//let carImage = new Image();
-
+let img = new Image();
 let isDrawing = false;
 let startX, startY;
 let currentX, currentY;
 
-carImage.onload = function() {
-  canvas.width = carImage.width;
-  canvas.height = carImage.height;
-  ctx.drawImage(carImage, 0, 0);
+img.onload = function() {
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
 };
 
 function loadImage() {
-  
   const url = document.getElementById('imageURL').value;
-  carImage.src = url;
+  img.src = url;
 }
 
 canvas.addEventListener('mousedown', (e) => {
@@ -96,12 +71,11 @@ canvas.addEventListener('mouseout', () => {
 });
 
 function redrawWithRectangle() {
-  ctx.drawImage(carImage, 0, 0);
+  ctx.drawImage(img, 0, 0);
   ctx.strokeStyle = 'red';
   ctx.lineWidth = 2;
   ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
 }
-
 
 function cropImage() {
   if (startX === undefined || startY === undefined || currentX === undefined || currentY === undefined) {
@@ -124,19 +98,17 @@ function cropImage() {
 
   const actualX = Math.min(startX, currentX);
   const actualY = Math.min(startY, currentY);
-  croppedCtx.drawImage(carImage, actualX, actualY, width, height, 0, 0, width, height);
 
-  // Display the cropped image
+  croppedCtx.drawImage(img, actualX, actualY, width, height, 0, 0, width, height);
+
   const croppedImage = document.getElementById('croppedImage');
   croppedCanvas.toBlob((blob) => {
-      const imageUrl = URL.createObjectURL(blob); // Create URL for the blob
-      croppedImage.src = imageUrl; // Set the src of the image element
-      // No need to create a download link anymore, since we're displaying it
+    const imageUrl = URL.createObjectURL(blob);
+    croppedImage.src = imageUrl;
   });
 }
 
 loadImage();
-
 </script>
 
 </body>
