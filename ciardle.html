@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Ciarondle</title>
+<title>Ciardle</title>
 <style>
 body {
   font-family: sans-serif;
@@ -35,7 +35,9 @@ const maxGuessAttempts = 5;
 const revealPercentages = [20, 40, 60, 80, 100];
 
 // Car Data (REPLACE with your own car data and image URLs)
-cars.push({ name: "Bond Bug", image: "https://upload.wikimedia.org/wikipedia/commons/4/49/1973_Bond_Bug_700_ES.jpg" }); // Replace with actual paths
+https://github.com/nrobbert/Ciardle/blob/d3a75f1d4d144c154f686b15808ecc0ee8b4fa78/image%20(5).png
+cars.push({ name: "Bond Bug", image: "car.jpg" }); // Replace with actual paths
+//cars.push({ name: "Bond Bug", image: "https://upload.wikimedia.org/wikipedia/commons/4/49/1973_Bond_Bug_700_ES.jpg" }); // Replace with actual paths
 //cars.push({ name: "BMW M5", image: "bmw_m5.jpg" }); // Replace with actual paths
 //cars.push({ name: "Audi R8", image: "audi_r8.jpg" }); // Replace with actual paths
 // Add more car data here...
@@ -46,8 +48,9 @@ function startNewGame() {
   currentCar = cars[randomIndex];
 
   // Load the initial cropped image
+  carImage.src = currentCar.image
   //carImage.src = getCroppedImagePath(currentCar.image, revealPercentages[currentGuessAttempts]);
-  carImage.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/1973_Bond_Bug_700_ES.jpg/512px-1973_Bond_Bug_700_ES.jpg?20210914202413"
+  //carImage.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/1973_Bond_Bug_700_ES.jpg/512px-1973_Bond_Bug_700_ES.jpg?20210914202413"
   resultText.textContent = "";
   guessInput.disabled = false;
   guessInput.value = ""; // Clear input field
@@ -63,7 +66,9 @@ function checkGuess() {
     currentGuessAttempts++;
     if (currentGuessAttempts < maxGuessAttempts) {
       resultText.textContent = "Incorrect. Try again.";
-      carImage.src = getCroppedImagePath(currentCar.image, revealPercentages[currentGuessAttempts]);
+      //carImage.src = getCroppedImagePath(currentCar.image, revealPercentages[currentGuessAttempts]);
+      carImage.src = getCroppedImagePath(currentCar.image, currentGuessAttempts);
+      
     } else {
       resultText.textContent = "Out of guesses! The answer was " + currentCar.name;
       guessInput.disabled = true;
@@ -71,13 +76,14 @@ function checkGuess() {
   }
 }
 
-function getCroppedImagePath(imagePath, percentage) {
+function getCroppedImagePath(imagePath, guesses) {
   //  In a real web application, you would typically handle image cropping on the server.
   //  Client-side cropping with canvas can be complex and performance-intensive, especially for larger images.
   //  For this simplified example, we'll assume you have pre-cropped images.
 
     // Example:  Assume you have images named like "porsche_911_20.jpg", "porsche_911_40.jpg", etc.
-  return imagePath.replace(".jpg", "_" + percentage + ".jpg"); // Modify as needed
+  //return imagePath.replace(".jpg", "_" + guesses + ".jpg"); // Modify as needed
+  return imagePath.replace(".jpg", guesses + ".jpg"); // Modify as needed
 }
 
 startNewGame(); // Start the game when the page loads
