@@ -11,10 +11,11 @@ canvas { display: block; }
 #carImageContainer {
   margin-top: 10px;
 }
-#carImage {
+#OriginalCanvas {
   width: 600px; /* Adjust as needed */
+  height: auto;
   /*height: 400px; /* Adjust as needed */
-  object-fit: cover; /* Prevents image distortion */
+  object-fit: contain; /* Prevents image distortion */
   border: 1px solid black;
 }
 #croppedImage {  /* Style for the cropped image display */
@@ -26,60 +27,84 @@ canvas { display: block; }
 </head>
 <body>
 
+<div id="Code">
+  Unique code: <input type="text" id="uniqueCode" value ="">
+</div>
 
-<div id="controls">
+<div id="input">
   Image URL: <input type="text" id="imageURL" value="https://upload.wikimedia.org/wikipedia/commons/5/55/JDV584V_1980_Triumph_Spitfire_1500.jpg" size="50">
   <button onclick="loadImage()">Load Image</button>
+</div>
+
+<canvas id="OriginalCanvas"></canvas>
+<div id="carImageContainer">
+  <img id="CroppedImage">
+</div>
+
+<div id="MakeModel">
+  Make: <input type="text" id="CarMake" value ="Triumph">
+  Model: <input type="text" id="CarModel" value ="Spitfire">
+</div>
+
+<div id="makeImage">
   <button onclick="cropImage(1)">Make Image 1</button>
   <button onclick="cropImage(2)">Make Image 2</button>
   <button onclick="cropImage(3)">Make Image 3</button>
   <button onclick="cropImage(4)">Make Image 4</button>
   <button onclick="cropImage(5)">Make Image 5</button>
 </div>
-
-<canvas id="imageCanvas"></canvas>
-<div id="carImageContainer">
-  <img id="carImage" alt="Cropped Image">
-</div>
-
 <div id="croppedImages">
-  <img id="Image1" alt="Image 1">
-  <img id="Image2" alt="Image 2">
-  <img id="Image3" alt="Image 3">
-  <img id="Image4" alt="Image 4">
-  <img id="Image5" alt="Image 5">
+  <img id="Image1" alt="Image 1" style="max-width: 100px; height: auto;">
+  <img id="Image2" alt="Image 2" style="max-width: 100px; height: auto;">
+  <img id="Image3" alt="Image 3" style="max-width: 100px; height: auto;">
+  <img id="Image4" alt="Image 4" style="max-width: 100px; height: auto;">
+  <img id="Image5" alt="Image 5" style="max-width: 100px; height: auto;">
+</div>
+<div id="upload">
+  <button onclick="uploadImages()">Upload images</button><text id="resultText"></p>
 </div>
 
 
 <script>
-const canvas = document.getElementById('imageCanvas');
-const ctx = canvas.getContext('2d');
-let carImage = document.getElementById("carImage");
-//let carImage = new Image();
+const OriginalCanvas = document.getElementById('OriginalCanvas');
+const ctx = OriginalCanvas.getContext('2d');
+let croppedImage = document.getElementById("CroppedImage");
+let carImage = new Image(); // Actual picture of car
+carImage.crossOrigin = "anonymous";
 
 let isDrawing = false;
 let startX, startY;
 let currentX, currentY;
 
+const uniqueCodeBox = document.getElementById('uniqueCode');
+const now = new Date();
+uniqueCodeBox.value = now.toTimeString().slice(0, 8).replaceAll(":","");
+
+
 carImage.onload = function() {
-  canvas.width = carImage.width;
-  canvas.height = carImage.height;
+  OriginalCanvas.width = carImage.width;
+  OriginalCanvas.height = carImage.height;
   ctx.drawImage(carImage, 0, 0);
 };
 
 function loadImage() {
   
   const url = document.getElementById('imageURL').value;
+  console.log(url);
   carImage.src = url;
+  //ctx.drawImage(carImage, 0, 0);
 }
 
-canvas.addEventListener('mousedown', (e) => {
+OriginalCanvas.addEventListener('mousedown', (e) => {
   startX = e.offsetX;
   startY = e.offsetY;
   isDrawing = true;
+  console.log(startX);
+  console.log(startY);
+  
 });
 
-canvas.addEventListener('mousemove', (e) => {
+OriginalCanvas.addEventListener('mousemove', (e) => {
   if (isDrawing) {
     currentX = e.offsetX;
     currentY = e.offsetY;
@@ -87,30 +112,59 @@ canvas.addEventListener('mousemove', (e) => {
   }
 });
 
-canvas.addEventListener('mouseup', () => {
+OriginalCanvas.addEventListener('mouseup', () => {
   isDrawing = false;
 });
 
-canvas.addEventListener('mouseout', () => {
+OriginalCanvas.addEventListener('mouseout', () => {
   isDrawing = false;
 });
 
 function redrawWithRectangle() {
   ctx.drawImage(carImage, 0, 0);
   ctx.strokeStyle = 'red';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+  
+
+  const scaleX = carImage.width / OriginalCanvas.clientWidth;
+  const scaleY = carImage.height / OriginalCanvas.clientHeight;
+  ctx.lineWidth = 2 * scaleX;
+  console.log(scaleX, scaleY);
+
+  const actualStartX = startX * scaleX;
+  const actualStartY = startY * scaleY;
+  const actualCurrentX = currentX * scaleX;
+  const actualCurrentY = currentY * scaleY;
+
+  //ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+  //ctx.strokeRect(startX,startY,100,100);
+  ctx.strokeStyle = 'green';
+  //ctx.strokeRect(actualStartX,actualStartY,100,100);
+  
+  ctx.strokeRect(actualStartX, actualStartY, actualCurrentX - actualStartX, actualCurrentY - actualStartY);
+
+    //report the canvas coordinates
+    console.log(`Screen Coordinates: (${startX}, ${startY}) to (${currentX}, ${currentY})`);
+    console.log(`Canvas Coordinates: (${actualStartX.toFixed(2)}, ${actualStartY.toFixed(2)}) to (${actualCurrentX.toFixed(2)}, ${actualCurrentY.toFixed(2)})`);
+
 }
 
 
-function cropImage() {
+function cropImage(imgNum) {
   if (startX === undefined || startY === undefined || currentX === undefined || currentY === undefined) {
     alert("Please select a region to crop.");
     return;
   }
 
-  const width = Math.abs(currentX - startX);
-  const height = Math.abs(currentY - startY);
+  const scaleX = carImage.width / OriginalCanvas.clientWidth;
+  const scaleY = carImage.height / OriginalCanvas.clientHeight;
+
+  const actualStartX = startX * scaleX;
+  const actualStartY = startY * scaleY;
+  const actualCurrentX = currentX * scaleX;
+  const actualCurrentY = currentY * scaleY;
+
+  const width = Math.abs(actualCurrentX - actualStartX);
+  const height = Math.abs(actualCurrentY - actualStartY);
 
   if (width === 0 || height === 0) {
     alert("Selected region has zero width or height.");
@@ -122,18 +176,201 @@ function cropImage() {
   croppedCanvas.height = height;
   const croppedCtx = croppedCanvas.getContext('2d');
 
-  const actualX = Math.min(startX, currentX);
-  const actualY = Math.min(startY, currentY);
+  const actualX = Math.min(actualStartX, actualCurrentX);
+  const actualY = Math.min(actualStartY, actualCurrentY);
   croppedCtx.drawImage(carImage, actualX, actualY, width, height, 0, 0, width, height);
 
-  // Display the cropped image
-  const croppedImage = document.getElementById('croppedImage');
+  const CroppedImage = document.getElementById('Image' + imgNum);
   croppedCanvas.toBlob((blob) => {
-      const imageUrl = URL.createObjectURL(blob); // Create URL for the blob
-      croppedImage.src = imageUrl; // Set the src of the image element
-      // No need to create a download link anymore, since we're displaying it
+    const imageUrl = URL.createObjectURL(blob);
+    CroppedImage.src = imageUrl;
   });
 }
+
+
+
+async function uploadImageToCloudinary(imageElement, cloudName, uploadPreset, publicId, filename) {
+  return new Promise((resolve, reject) => {
+    if (!imageElement || imageElement.tagName !== 'IMG') {
+      reject(new Error('Invalid image element provided.'));
+      return;
+    }
+
+    if (!cloudName || !uploadPreset || !publicId) { // publicId is now required
+      reject(new Error('Cloud name, upload preset, and public ID are required.'));
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = imageElement.naturalWidth;
+    canvas.height = imageElement.naturalHeight;
+
+    ctx.drawImage(imageElement, 0, 0);
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        reject(new Error('Failed to create image blob.'));
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', blob, filename || 'image.png');
+      formData.append('upload_preset', uploadPreset);
+      formData.append('public_id', publicId); // Add public_id to form data
+      //formData.append('overwrite', true); // Enable overwrite
+     
+      try {
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          reject(new Error(`Cloudinary upload failed: ${errorData.error.message}`));
+          return;
+        }
+
+        const data = await response.json();
+        resolve(data);
+      } catch (error) {
+        reject(error);
+      }
+    }, 'image/png');
+  });
+}
+
+
+async function uploadCanvasToCloudinary(canvas, cloudName, uploadPreset, publicId, filename) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error('Failed to create image blob.'));
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const dataURL = reader.result;
+
+          // Create a temporary <img> element
+          const img = new Image();
+          img.onload = async () => {
+            try {
+              const result = await uploadImageToCloudinary(img, cloudName, uploadPreset, publicId, filename);
+              resolve(result);
+            } catch (error) {
+              reject(error);
+            }
+          };
+          img.onerror = () => {
+            reject(new Error('Failed to load image from data URL.'));
+          };
+          img.src = dataURL;
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.readAsDataURL(blob);
+    }, 'image/png');
+  });
+}
+
+async function uploadTextFileToCloudinary(string1, string2, cloudName, uploadPreset, publicId, filename) {
+  return new Promise(async (resolve, reject) => {
+    if (!cloudName || !uploadPreset || !publicId || !filename) {
+      reject(new Error('Cloud name, upload preset, public ID, and filename are required.'));
+      return;
+    }
+
+    const textContent = `${string1}\n${string2}`; // Combine strings with newline
+
+    try {
+      const blob = new Blob([textContent], { type: 'text/plain' });
+      const formData = new FormData();
+      formData.append('file', blob, filename);
+      formData.append('upload_preset', uploadPreset);
+      formData.append('public_id', publicId);
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, // Use 'raw' for text files
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Cloudinary Error:', errorData);
+        reject(new Error(`Cloudinary upload failed: ${errorData.error.message}`));
+        return;
+      }
+
+      const data = await response.json();
+      resolve(data);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+async function uploadImages() {
+  //const imageElement = document.getElementById('Image1'); // Replace with your image ID
+  //const cloudName = 'nickrobberts'; // Replace with your Cloudinary cloud name
+  //const uploadPreset = 'ciardleupload'; // Replace with your Cloudinary upload preset
+  const uniqueCode = document.getElementById('uniqueCode').value;
+  
+  let result
+
+  ctx.drawImage(carImage, 0, 0); // refresh to remove red rectangle
+  document.getElementById("resultText").textContent="Uploading...";
+
+  // Main image
+  try {
+    const FullCanvas = document.getElementById('OriginalCanvas');
+    const result = await uploadCanvasToCloudinary(FullCanvas, 'nickrobberts', 'ciardleupload', 'ciardleImage' + uniqueCode, 'ciardleImage' + uniqueCode);
+    console.log('Cloudinary upload successful:', result);
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+  }
+
+  // Clue images
+  try {
+    result = await uploadImageToCloudinary(document.getElementById('Image1'), 'nickrobberts', 'ciardleupload', 'ciardleImage' + uniqueCode + '1', 'ciardleImage' + uniqueCode + '1');
+    result = await uploadImageToCloudinary(document.getElementById('Image2'), 'nickrobberts', 'ciardleupload', 'ciardleImage' + uniqueCode + '2', 'ciardleImage' + uniqueCode + '2');
+    result = await uploadImageToCloudinary(document.getElementById('Image3'), 'nickrobberts', 'ciardleupload', 'ciardleImage' + uniqueCode + '3', 'ciardleImage' + uniqueCode + '3');
+    result = await uploadImageToCloudinary(document.getElementById('Image4'), 'nickrobberts', 'ciardleupload', 'ciardleImage' + uniqueCode + '4', 'ciardleImage' + uniqueCode + '4');
+    result = await uploadImageToCloudinary(document.getElementById('Image5'), 'nickrobberts', 'ciardleupload', 'ciardleImage' + uniqueCode + '5', 'ciardleImage' + uniqueCode + '5');
+    
+    //const result = await uploadImageToCloudinary(imageElement, cloudName, uploadPreset, filename);
+    console.log('Cloudinary upload successful:', result);
+    document.getElementById("resultText").textContent="Uploading complete";
+    // Access the uploaded image URL: result.secure_url
+    // you can then use this url to update the source of the image, or store it in a database.
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    document.getElementById("resultText").textContent="Uploading failed";
+  }
+
+  // Text file with Make and Model
+  try {
+
+
+    const result = await uploadTextFileToCloudinary(document.getElementById('CarMake').value, document.getElementById('CarModel').value, 'nickrobberts', 'ciardleupload', 'ciardleText' + uniqueCode, 'ciardleText' + uniqueCode);
+    console.log('Cloudinary text file upload successful:', result);
+  } catch (error) {
+    console.error('Cloudinary text file upload error:', error);
+  }
+
+}
+
 
 loadImage();
 
