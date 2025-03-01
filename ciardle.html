@@ -6,7 +6,7 @@
 body {
   font-family: sans-serif;
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 button {
@@ -168,24 +168,27 @@ function getInfoFromCloudinaryTextFile() {
 function checkGuess() {
   let userGuessMake = guessMake.value;
   let userGuessModel = guessModel.value;
+  let userGuessMakeCorrect = approximateMatch(userGuessMake, CarMake);
+  let userGuessModelCorrect = approximateMatch(userGuessModel, CarModel);
 
-  addAnswerRow(userGuessMake, userGuessModel);
+  addAnswerRow(userGuessMake + ' ' + (userGuessMakeCorrect==true ? '\u2713' : '\u2717'), userGuessModel + ' ' + (userGuessModelCorrect==true ? '\u2713' : '\u2717'));
 
   // Check Make
 
-  if (userGuessMake.toLowerCase() === CarMake.toLowerCase())
+  /*if (userGuessMake.toLowerCase() === CarMake.toLowerCase())
   {
-    userGuessMake = true;
+    userGuessMakeCorrect = true;
   }
 
   if (userGuessModel.toLowerCase() === CarModel.toLowerCase())
   {
-    userGuessModel = true;
+    userGuessModelCorrect = true;
   }
+    */
 
-  resultText.textContent = "Make:" + (userGuessMake==true ? '\u2713' : '\u2717') + ", Model:" + (userGuessModel==true ? '\u2713' : '\u2717')
+  resultText.textContent = "Make:" + (userGuessMakeCorrect==true ? '\u2713' : '\u2717') + ", Model:" + (userGuessModelCorrect==true ? '\u2713' : '\u2717')
 
-  if (userGuessMake==true && userGuessModel==true)
+  if (userGuessMakeCorrect==true && userGuessModelCorrect==true)
   {
     //resultText.textContent = "Correct!";
     carImage.src = ImageURLStart + ImageURLEnd;
@@ -228,10 +231,59 @@ function addAnswerRow(makeString, modelString) {
         const cell1 = newRow.insertCell(0);
         const cell2 = newRow.insertCell(1);
 
-        cell1.innerHTML = makeString;
-        cell2.innerHTML = modelString;
+        cell1.textContent = makeString;
+        cell2.textContent = modelString;
 
       }
+
+function approximateMatch(str1, str2, tolerance = 0.8) {
+  // Normalize strings: lowercase and remove non-alphanumeric characters
+  const normalize = (str) =>
+    str.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  const normalizedStr1 = normalize(str1);
+  const normalizedStr2 = normalize(str2);
+
+  if (!normalizedStr1 || !normalizedStr2) {
+    return normalizedStr1 === normalizedStr2; // Handle empty string cases
+  }
+
+  // Calculate Levenshtein distance (edit distance)
+  const levenshteinDistance = (s1, s2) => {
+    const matrix = Array(s1.length + 1)
+      .fill(null)
+      .map(() => Array(s2.length + 1).fill(null));
+
+    for (let i = 0; i <= s1.length; i++) {
+      matrix[i][0] = i;
+    }
+    for (let j = 0; j <= s2.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= s1.length; i++) {
+      for (let j = 1; j <= s2.length; j++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1, // deletion
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j - 1] + cost // substitution
+        );
+      }
+    }
+
+    return matrix[s1.length][s2.length];
+  };
+
+  const distance = levenshteinDistance(normalizedStr1, normalizedStr2);
+  const maxLength = Math.max(normalizedStr1.length, normalizedStr2.length);
+
+  // Calculate similarity
+  const similarity = 1 - distance / maxLength;
+  console.log('Check:' + str1 + ", " + str2 + ": " + similarity + "(limit=", + tolerance + ")")
+
+  return similarity >= tolerance;
+}
 
 //startNewGame(); // Start the game when the page loads
 
