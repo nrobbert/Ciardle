@@ -190,7 +190,7 @@ function checkGuess() {
 
   if (userGuessMakeCorrect==true && userGuessModelCorrect==true)
   {
-    //resultText.textContent = "Correct!";
+    resultText.textContent = "Correct! " + CarMake + " " + CarModel;
     carImage.src = ImageURLStart + ImageURLEnd;
     guessMake.disabled = true;
     guessModel.disabled = true;
