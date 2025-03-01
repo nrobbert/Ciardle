@@ -6,7 +6,30 @@
 body {
   font-family: sans-serif;
   text-align: center;
+  font-size: 2rem;
 }
+
+button {
+    font-size: inherit;
+}
+
+input {
+    font-size: inherit;
+}
+
+#answerTable {
+    width: 400px; /* 2 columns * 200px */
+    margin: 0 auto; /* Center horizontally */
+    border-collapse: collapse; /* Optional: collapse borders */
+  }
+  th, td {
+    width: 200px;
+    border: 1px solid black; /* Optional: add borders */
+    padding: 8px; /* Optional: add padding */
+    text-align: left; /* Optional: align text left */
+  }
+  
+
 #carImage {
   width: auto;
   /* width: 500px; /* Adjust as needed */
@@ -26,8 +49,8 @@ body {
 
 <img id="carImage" src="" alt="Car Image">
 <p id="resultText"></p>
-<input type="text" id="guessMake" placeholder="Enter your guess">
-<input type="text" id="guessModel" placeholder="Enter your guess">
+<input type="text" id="guessMake" placeholder="Enter Make">
+<input type="text" id="guessModel" placeholder="Enter Model">
 <button id="guessButton" onclick="checkGuess()">Guess</button>
 
 <table id="answerTable">
