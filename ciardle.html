@@ -92,7 +92,7 @@ cars.push({ name: "Bond Bug", image: "car.jpg" }); // Replace with actual paths
 
 async function startNewGame() {
   uniqueCode = document.getElementById('uniqueCode').value;
-  currentGuessAttempts = 0;
+  currentGuessAttempts = 1;
   let randomIndex = Math.floor(Math.random() * cars.length);
   currentCar = cars[randomIndex];
 
@@ -197,7 +197,7 @@ function checkGuess() {
     guessButton.disabled = true;
   } else {
     currentGuessAttempts++;
-    if (currentGuessAttempts < maxGuessAttempts) {
+    if (currentGuessAttempts <= maxGuessAttempts) {
       //resultText.textContent = "Incorrect. Try again.";
       //carImage.src = getCroppedImagePath(currentCar.image, revealPercentages[currentGuessAttempts]);
       //carImage.src = getCroppedImagePath(currentCar.image, currentGuessAttempts);
