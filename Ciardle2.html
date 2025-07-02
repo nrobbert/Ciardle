@@ -369,7 +369,7 @@
 </div>
 
 <div id="mainGameArea">
-  <img id="carImage" src="./Ciardle_files/Ciardlelogo.png" alt="Car Image">
+  <img id="carImage" src="Ciardlelogo.png" alt="Car Image"> <!-- Updated src path -->
 
   <div class="game-controls-and-results">
     <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
@@ -702,7 +702,7 @@ async function getCarHint() {
   chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
   const payload = { contents: chatHistory };
-  const apiKey = ""; // Leave as-is for Canvas environment
+  const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Your Gemini API Key
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   try {
@@ -713,7 +713,10 @@ async function getCarHint() {
     });
 
     if (!response.ok) {
-      throw new Error(`API call failed with status: ${response.status}`);
+      // Attempt to read error message from response body
+      const errorData = await response.json();
+      const errorMessage = errorData.error ? errorData.error.message : response.statusText;
+      throw new Error(`API call failed with status: ${response.status} - ${errorMessage}`);
     }
 
     const result = await response.json();
@@ -727,7 +730,7 @@ async function getCarHint() {
       console.error("Gemini API response structure unexpected:", result);
     }
   } catch (error) {
-    hintText.textContent = "Error generating hint. Please check console for details.";
+    hintText.textContent = `Error generating hint: ${error.message}. Please check console for details.`;
     console.error("Error calling Gemini API:", error);
   } finally {
     getHintButton.disabled = false; // Re-enable button after response
