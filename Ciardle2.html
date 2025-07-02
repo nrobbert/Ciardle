@@ -136,6 +136,7 @@
     display: block;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Softer shadow */
     transition: transform 0.3s ease-in-out;
+    cursor: pointer; /* Indicate clickable */
   }
 
   #carImage:hover {
@@ -312,8 +313,8 @@
   }
 
   #largeGuessedImage {
-    max-width: 90%; /* Max width of the large image */
-    max-height: 90%; /* Max height of the large image */
+    max-width: 95%; /* Increased max-width */
+    max-height: 95%; /* Increased max-height */
     object-fit: contain;
     border: 4px solid white; /* White border for the large image */
     border-radius: 15px;
@@ -369,7 +370,7 @@
 </div>
 
 <div id="mainGameArea">
-  <img id="carImage" src="Ciardlelogo.png" alt="Car Image"> <!-- Updated src path -->
+  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onclick="showLargeImage(this.src)"> <!-- Added onclick -->
 
   <div class="game-controls-and-results">
     <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
@@ -412,7 +413,7 @@
 </div>
 
 <!-- Image Overlay for large view -->
-<div id="imageOverlay" class="hidden" onclick="hideLargeImage()">
+<div id="imageOverlay" onclick="hideLargeImage()">
   <img id="largeGuessedImage" src="" alt="Large Guessed Car Image">
 </div>
 
