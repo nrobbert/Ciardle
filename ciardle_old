@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ciardle</title>
+<style>
+body {
+  font-family: sans-serif;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+button {
+    font-size: inherit;
+}
+
+input {
+    font-size: inherit;
+}
+
+#answerTable {
+    width: 400px; /* 2 columns * 200px */
+    margin: 0 auto; /* Center horizontally */
+    border-collapse: collapse; /* Optional: collapse borders */
+  }
+  th, td {
+    width: 200px;
+    border: 1px solid black; /* Optional: add borders */
+    padding: 8px; /* Optional: add padding */
+    text-align: left; /* Optional: align text left */
+  }
+  
+
+#carImage {
+  width: auto;
+  /* width: 500px; /* Adjust as needed */
+  height: 500px; /* Adjust as needed */
+  object-fit: contain; /* Prevents image distortion */
+  border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+<h1>Ciardle</h1>
+
+<div id="Code">
+  Enter code: <input type="text" id="uniqueCode" value ="test"><button onclick="startNewGame()">Go!</button>
+</div>
+
+<img id="carImage" src="./Ciardlelogo.png" alt="Car Image">
+<p id="resultText"></p>
+<input type="text" id="guessMake" placeholder="Enter Make">
+<input type="text" id="guessModel" placeholder="Enter Model">
+<button id="guessButton" onclick="checkGuess()">Guess</button>
+
+<table id="answerTable">
+  <thead>
+    <tr>
+      <th>Make</th>
+      <th>Model</th>
+    </tr>
+  </thead>
+  <tbody>
+    </tbody>
+</table>
+
+<script>
+let carImage = document.getElementById("carImage");
+let resultText = document.getElementById("resultText");
+let guessMake = document.getElementById("guessMake");
+let guessModel = document.getElementById("guessModel");
+let guessButton = document.getElementById("guessButton");
+let cars = [];
+let currentCar;
+let CarMake, CarModel;
+let currentGuessAttempts;
+let uniqueCode;
+let MakeCorrect = false;
+let ModelCorrect = false;
+const maxGuessAttempts = 5;
+const revealPercentages = [20, 40, 60, 80, 100];
+
+// Car Data (REPLACE with your own car data and image URLs)
+https://github.com/nrobbert/Ciardle/blob/d3a75f1d4d144c154f686b15808ecc0ee8b4fa78/image%20(5).png
+cars.push({ name: "Bond Bug", image: "car.jpg" }); // Replace with actual paths
+//cars.push({ name: "Bond Bug", image: "https://upload.wikimedia.org/wikipedia/commons/4/49/1973_Bond_Bug_700_ES.jpg" }); // Replace with actual paths
+//cars.push({ name: "BMW M5", image: "bmw_m5.jpg" }); // Replace with actual paths
+//cars.push({ name: "Audi R8", image: "audi_r8.jpg" }); // Replace with actual paths
+// Add more car data here...
+
+
+
+async function startNewGame() {
+  uniqueCode = document.getElementById('uniqueCode').value;
+  currentGuessAttempts = 1;
+  let randomIndex = Math.floor(Math.random() * cars.length);
+  currentCar = cars[randomIndex];
+
+  resultText.textContent = "";
+  guessMake.disabled = false;
+  guessMake.value = ""; // Clear input field
+  guessModel.disabled = false;
+  guessModel.value = ""; // Clear input field
+  guessButton.disabled = false;
+
+  // Load make and model answer from text file
+  //getInfoFromCloudinaryTextFile()
+  try {
+    const result = await getInfoFromCloudinaryTextFile();
+    console.log('result:', result);
+    console.log('Make:',CarMake, ', Model:', CarModel);
+    
+  } catch (error) {
+    console.error('Text file download error:', error);
+  }
+
+  ImageURLStart = 'https://res.cloudinary.com/nickrobberts/image/upload/ciardleImage' + uniqueCode;
+  ImageURLEnd = '.png';
+
+  // Load the initial cropped image
+  //carImage.src = currentCar.image
+  carImage.src = ImageURLStart + '1' + ImageURLEnd;
+  //carImage.src = getCroppedImagePath(currentCar.image, revealPercentages[currentGuessAttempts]);
+  //carImage.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/1973_Bond_Bug_700_ES.jpg/512px-1973_Bond_Bug_700_ES.jpg?20210914202413"
+}
+
+function getInfoFromCloudinaryTextFile() {
+
+  const cloudName = 'nickrobberts';
+  const publicId = 'ciardleText' + uniqueCode; // Same public ID as uploaded
+  const fileFormat = 'txt'; // Same file format as uploaded
+
+  return new Promise(async (resolve, reject) => {
+    if (!cloudName || !publicId || !fileFormat) {
+      reject(new Error('Cloud name, public ID, and file format are required.'));
+      return;
+    }
+
+    //const downloadUrl = `https://res.cloudinary.com/${cloudName}/raw/upload/${publicId}.${fileFormat}`;
+    const downloadUrl = `https://res.cloudinary.com/${cloudName}/raw/upload/${publicId}`;
+
+    try {
+      const response = await fetch(downloadUrl);
+
+      if (!response.ok) {
+        reject(new Error(`Failed to download file: ${response.statusText}`));
+        return;
+      }
+
+      const text = await response.text();
+      const strings = text.split('\n'); // Split by newline
+
+      if (strings.length >= 2) {
+        CarMake = strings[0];
+        CarModel = strings[1];
+        resolve({ string1: strings[0], string2: strings[1] });
+
+      } else {
+        reject(new Error('File does not contain two strings.'));
+      }
+    } catch (error) {
+      reject(error);
+    }
+
+  });
+}
+
+function checkGuess() {
+  let userGuessMake = guessMake.value;
+  let userGuessModel = guessModel.value;
+  let userGuessMakeCorrect = approximateMatch(userGuessMake, CarMake);
+  let userGuessModelCorrect = approximateMatch(userGuessModel, CarModel);
+
+  addAnswerRow(userGuessMake + ' ' + (userGuessMakeCorrect==true ? '\u2713' : '\u2717'), userGuessModel + ' ' + (userGuessModelCorrect==true ? '\u2713' : '\u2717'));
+
+  // Check Make
+
+  /*if (userGuessMake.toLowerCase() === CarMake.toLowerCase())
+  {
+    userGuessMakeCorrect = true;
+  }
+
+  if (userGuessModel.toLowerCase() === CarModel.toLowerCase())
+  {
+    userGuessModelCorrect = true;
+  }
+    */
+
+  resultText.textContent = "Make:" + (userGuessMakeCorrect==true ? '\u2713' : '\u2717') + ", Model:" + (userGuessModelCorrect==true ? '\u2713' : '\u2717')
+
+  if (userGuessMakeCorrect==true && userGuessModelCorrect==true)
+  {
+    resultText.textContent = "Correct! " + CarMake + " " + CarModel;
+    carImage.src = ImageURLStart + ImageURLEnd;
+    guessMake.disabled = true;
+    guessModel.disabled = true;
+    guessButton.disabled = true;
+  } else {
+    currentGuessAttempts++;
+    if (currentGuessAttempts <= maxGuessAttempts) {
+      //resultText.textContent = "Incorrect. Try again.";
+      //carImage.src = getCroppedImagePath(currentCar.image, revealPercentages[currentGuessAttempts]);
+      //carImage.src = getCroppedImagePath(currentCar.image, currentGuessAttempts);
+      carImage.src = ImageURLStart + currentGuessAttempts + ImageURLEnd;
+      
+    } else {
+      resultText.textContent = "Out of guesses! The answer was " + CarMake + " " + CarModel;
+      carImage.src = ImageURLStart + ImageURLEnd;
+      guessMake.disabled = true;
+      guessModel.disabled = true;
+      guessButton.disabled = true;
+    }
+  }
+}
+
+function getCroppedImagePath(imagePath, guesses) {
+  //  In a real web application, you would typically handle image cropping on the server.
+  //  Client-side cropping with canvas can be complex and performance-intensive, especially for larger images.
+  //  For this simplified example, we'll assume you have pre-cropped images.
+
+    // Example:  Assume you have images named like "porsche_911_20.jpg", "porsche_911_40.jpg", etc.
+  //return imagePath.replace(".jpg", "_" + guesses + ".jpg"); // Modify as needed
+  return imagePath.replace(".jpg", guesses + ".jpg"); // Modify as needed
+}
+
+function addAnswerRow(makeString, modelString) {
+      const table = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
+
+
+        const newRow = table.insertRow();
+        const cell1 = newRow.insertCell(0);
+        const cell2 = newRow.insertCell(1);
+
+        cell1.textContent = makeString;
+        cell2.textContent = modelString;
+
+      }
+
+function approximateMatch(str1, str2, tolerance = 0.8) {
+  // Normalize strings: lowercase and remove non-alphanumeric characters
+  const normalize = (str) =>
+    str.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  const normalizedStr1 = normalize(str1);
+  const normalizedStr2 = normalize(str2);
+
+  if (!normalizedStr1 || !normalizedStr2) {
+    return normalizedStr1 === normalizedStr2; // Handle empty string cases
+  }
+
+  // Calculate Levenshtein distance (edit distance)
+  const levenshteinDistance = (s1, s2) => {
+    const matrix = Array(s1.length + 1)
+      .fill(null)
+      .map(() => Array(s2.length + 1).fill(null));
+
+    for (let i = 0; i <= s1.length; i++) {
+      matrix[i][0] = i;
+    }
+    for (let j = 0; j <= s2.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= s1.length; i++) {
+      for (let j = 1; j <= s2.length; j++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1, // deletion
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j - 1] + cost // substitution
+        );
+      }
+    }
+
+    return matrix[s1.length][s2.length];
+  };
+
+  const distance = levenshteinDistance(normalizedStr1, normalizedStr2);
+  const maxLength = Math.max(normalizedStr1.length, normalizedStr2.length);
+
+  // Calculate similarity
+  const similarity = 1 - distance / maxLength;
+  console.log('Check:' + str1 + ", " + str2 + ": " + similarity + "(limit=", + tolerance + ")")
+
+  return similarity >= tolerance;
+}
+
+//startNewGame(); // Start the game when the page loads
+
+</script>
+
+</body>
+</html>
