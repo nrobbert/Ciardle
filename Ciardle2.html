@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciardle</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Base Styles for the Body */
+  body {
+    font-family: "Inter", sans-serif;
+    text-align: center;
+    font-size: 1.5rem;
+    background-color: #eef2f6; /* Lighter background for a cleaner look */
+    color: #2d3748; /* Darker text for better contrast */
+    padding: 15px; /* Slightly reduced overall padding */
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh; /* Ensure body takes full viewport height */
+  }
+
+  /* Headings */
+  h1, h2 {
+    color: #2a4365; /* Darker blue for headings */
+    font-weight: 700; /* Bold headings */
+    margin-bottom: 1rem; /* Reduced margin-bottom */
+  }
+
+  /* Buttons */
+  button {
+    font-size: 1.05rem; /* Slightly smaller font for buttons */
+    padding: 10px 20px; /* Reduced padding */
+    border-radius: 8px; /* Slightly less rounded corners */
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600; /* Semi-bold text */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Slightly less prominent shadow */
+    background-image: linear-gradient(to right, #4CAF50 0%, #45a049 100%); /* Green gradient */
+    color: white;
+  }
+
+  button:hover {
+    transform: translateY(-1px); /* Subtle lift effect */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+    background-image: linear-gradient(to right, #45a049 0%, #3e8e41 100%); /* Darker gradient on hover */
+  }
+
+  /* Specific button colors */
+  .btn-blue {
+    background-image: linear-gradient(to right, #4299e1 0%, #3182ce 100%); /* Blue gradient */
+  }
+  .btn-blue:hover {
+    background-image: linear-gradient(to right, #3182ce 0%, #2b6cb0 100%);
+  }
+
+  .btn-purple {
+    background-image: linear-gradient(to right, #805ad5 0%, #6b46c1 100%); /* Purple gradient */
+  }
+  .btn-purple:hover {
+    background-image: linear-gradient(to right, #6b46c1 0%, #553c9a 100%);
+  }
+
+  .btn-orange {
+    background-image: linear-gradient(to right, #f6ad55 0%, #ed8936 100%); /* Orange gradient for hint */
+  }
+  .btn-orange:hover {
+    background-image: linear-gradient(to right, #ed8936 0%, #dd6b20 100%);
+  }
+
+  /* Input Fields */
+  input[type="text"] {
+    font-size: 1.05rem; /* Slightly smaller font for inputs */
+    padding: 10px; /* Reduced padding */
+    margin: 6px; /* Reduced margin */
+    border: 1px solid #cbd5e0; /* Lighter border */
+    border-radius: 8px; /* Slightly less rounded corners */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
+    transition: all 0.2s ease-in-out;
+    max-width: 220px; /* Max width for inputs */
+  }
+
+  input[type="text"]:focus {
+    border-color: #63b3ed; /* Blue border on focus */
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4); /* Smaller focus ring */
+    outline: none;
+  }
+
+  /* Table Styling */
+  #answerTable {
+    width: 100%;
+    max-width: 600px; /* Slightly narrower table */
+    margin: 20px auto; /* Reduced margin */
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    border-radius: 12px; /* Slightly less rounded table corners */
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+
+  #answerTable th, #answerTable td {
+    border: none;
+    padding: 12px; /* Reduced padding */
+    text-align: center;
+  }
+
+  #answerTable th {
+    background-color: #ebf4ff;
+    font-weight: 700;
+    color: #2c5282;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  #answerTable tr:nth-child(even) {
+    background-color: #f7fafc;
+  }
+
+  #answerTable tr:hover {
+    background-color: #e2e8f0;
+  }
+
+  /* Main Car Image */
+  #carImage {
+    width: 100%;
+    max-width: 450px; /* Smaller image */
+    height: auto;
+    max-height: 450px;
+    object-fit: contain;
+    border: 2px solid #4a5568; /* Thinner border */
+    border-radius: 12px; /* Slightly less rounded corners */
+    margin: 20px auto; /* Reduced margin */
+    display: block;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Softer shadow */
+    transition: transform 0.3s ease-in-out;
+  }
+
+  #carImage:hover {
+    transform: scale(1.005); /* Even subtler zoom on hover */
+  }
+
+  /* Guessed Images Container */
+  #guessedImagesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px; /* Reduced gap */
+    margin-top: 25px; /* Reduced margin */
+    padding: 20px; /* Reduced padding */
+    background-color: #ffffff;
+    border-radius: 12px; /* Slightly less rounded */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    max-width: 800px; /* Reduced max width */
+    width: 100%;
+  }
+
+  .guessed-image-item {
+    width: 130px; /* Smaller guessed images */
+    height: 130px;
+    object-fit: cover;
+    border: 1px solid #a0aec0; /* Thinner border */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    transition: all 0.3s ease;
+    cursor: pointer; /* Indicate clickable */
+  }
+
+  .guessed-image-item:hover {
+    transform: scale(1.05) rotate(1deg); /* Less pronounced hover effect */
+    border-color: #4299e1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Shareable Results Container */
+  #shareableResultsContainer {
+    margin-top: 25px; /* Reduced margin */
+    padding: 20px; /* Reduced padding */
+    background-color: #edf2f7;
+    border-radius: 12px; /* Slightly less rounded */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    max-width: 600px; /* Reduced max width */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #shareableResultsTextarea {
+    width: 100%;
+    height: 120px; /* Shorter textarea */
+    padding: 12px; /* Reduced padding */
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1rem; /* Slightly smaller font */
+    resize: vertical;
+    margin-bottom: 12px; /* Reduced margin */
+    background-color: #ffffff;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Custom styles for ticks and crosses */
+  .tick {
+    color: #10b981;
+    font-weight: 900;
+    font-size: 1.2em; /* Slightly smaller */
+    margin-left: 4px; /* Reduced space */
+  }
+
+  .cross {
+    color: #ef4444;
+    font-weight: 900;
+    font-size: 1.2em;
+    margin-left: 4px;
+  }
+
+  /* Utility Classes (for general layout and spacing) */
+  .container-section {
+    background-color: #ffffff;
+    padding: 20px; /* Reduced padding */
+    border-radius: 12px; /* Slightly less rounded */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Reduced margin */
+    width: 100%;
+    max-width: 650px; /* Reduced max width */
+  }
+
+  /* Hint Section Styling */
+  #hintContainer {
+    margin-top: 15px; /* Reduced margin */
+    padding: 12px; /* Reduced padding */
+    background-color: #fffbeb;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07); /* Softer shadow */
+    max-width: 550px; /* Reduced max width */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #fbd38d;
+  }
+
+  #hintText {
+    font-style: italic;
+    color: #975a16;
+    margin-top: 8px; /* Reduced margin */
+    min-height: 20px; /* Ensure space even when empty */
+    font-size: 0.95rem; /* Slightly smaller hint text */
+  }
+
+  /* Main game area flex container */
+  #mainGameArea {
+    display: flex;
+    flex-direction: column; /* Default to column on small screens */
+    align-items: center;
+    gap: 20px; /* Space between image and controls */
+    width: 100%;
+    max-width: 1000px; /* Allow wider layout on large screens */
+    margin-bottom: 20px;
+  }
+
+  @media (min-width: 768px) {
+    #mainGameArea {
+      flex-direction: row; /* Row layout on medium screens and up */
+      justify-content: center;
+      align-items: flex-start; /* Align items to the top */
+    }
+
+    #carImage {
+      margin: 0; /* Remove auto margin when in flex row */
+      flex-shrink: 0; /* Prevent image from shrinking too much */
+      width: 45%; /* Take up 45% of the main game area */
+      max-width: 400px; /* Cap max width */
+      max-height: 400px; /* Cap max height */
+    }
+
+    .game-controls-and-results {
+      flex-grow: 1; /* Allow controls to take remaining space */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 0; /* Align with image top */
+      max-width: 500px; /* Limit width of controls column */
+    }
+
+    input[type="text"] {
+      width: 48%; /* Adjust width for two inputs side by side within flex */
+    }
+  }
+
+  /* Image Overlay Styles */
+  #imageOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  #imageOverlay.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #largeGuessedImage {
+    max-width: 90%; /* Max width of the large image */
+    max-height: 90%; /* Max height of the large image */
+    object-fit: contain;
+    border: 4px solid white; /* White border for the large image */
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Glowing effect */
+    cursor: pointer; /* Indicate it's clickable to close */
+  }
+
+  /* Responsive adjustments for the "Enter Code" section */
+  #Code .flex-row-nowrap {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    align-items: center;
+    justify-content: center; /* Center content horizontally */
+  }
+
+  #Code .flex-row-nowrap label {
+    margin-right: 10px; /* Space between label and input */
+    white-space: nowrap; /* Prevent label from wrapping */
+  }
+
+  #Code .flex-row-nowrap input {
+    flex-grow: 1; /* Allow input to grow */
+    max-width: 150px; /* Adjust max-width for input to keep it compact */
+    margin: 0 6px; /* Adjust margins to keep tight */
+  }
+
+  #Code .flex-row-nowrap button {
+    flex-shrink: 0; /* Prevent button from shrinking */
+    margin: 0; /* Remove extra margins */
+  }
+
+  @media (max-width: 480px) {
+    #Code .flex-row-nowrap input {
+      max-width: 100px; /* Even smaller input on very small screens */
+    }
+    #Code .flex-row-nowrap label {
+      font-size: 0.9rem; /* Smaller font for label on small screens */
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<h1 class="text-4xl font-bold mb-6 text-gray-800">Ciardle</h1>
+
+<div id="Code" class="container-section flex flex-col items-center">
+  <div class="flex-row-nowrap w-full max-w-md"> <!-- Added flex-row-nowrap -->
+    <label for="uniqueCode" class="text-lg font-medium">Enter code:</label>
+    <input type="text" id="uniqueCode" value="test">
+    <button id="goButton" onclick="startNewGame()" class="btn-blue">Go!</button>
+  </div>
+</div>
+
+<div id="mainGameArea">
+  <img id="carImage" src="./Ciardle_files/Ciardlelogo.png" alt="Car Image">
+
+  <div class="game-controls-and-results">
+    <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
+
+    <div class="flex flex-col sm:flex-row items-center w-full max-w-md mb-4">
+      <input type="text" id="guessMake" placeholder="Enter Make" class="flex-grow">
+      <input type="text" id="guessModel" placeholder="Enter Model" class="flex-grow">
+    </div>
+    <button id="guessButton" onclick="checkGuess()" class="mb-4 w-full sm:w-auto">Guess</button>
+
+    <!-- Hint Section -->
+    <div id="hintContainer">
+      <button id="getHintButton" onclick="getCarHint()" class="btn-orange mb-2">Get Hint ✨</button>
+      <p id="hintText" class="text-base"></p>
+    </div>
+  </div>
+</div>
+
+<table id="answerTable">
+  <thead>
+    <tr>
+      <th>Make</th>
+      <th>Model</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-gray-700">Previous Guesses</h2>
+<div id="guessedImagesContainer">
+  <!-- Guessed images will be displayed here -->
+</div>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-gray-700">Shareable Results</h2>
+<div id="shareableResultsContainer">
+  <textarea id="shareableResultsTextarea" readonly placeholder="Your game results will appear here..."></textarea>
+  <button onclick="copyShareableResults()" class="btn-purple">Copy Results</button>
+  <p id="copyMessage" class="text-sm text-green-700 mt-2 hidden">Copied to clipboard!</p>
+</div>
+
+<!-- Image Overlay for large view -->
+<div id="imageOverlay" class="hidden" onclick="hideLargeImage()">
+  <img id="largeGuessedImage" src="" alt="Large Guessed Car Image">
+</div>
+
+
+<script>
+let carImage = document.getElementById("carImage");
+let resultText = document.getElementById("resultText");
+let guessMake = document.getElementById("guessMake");
+let guessModel = document.getElementById("guessModel");
+let guessButton = document.getElementById("guessButton");
+let goButton = document.getElementById("goButton");
+let getHintButton = document.getElementById("getHintButton"); // Get the hint button
+let hintText = document.getElementById("hintText"); // Get the hint text paragraph
+let imageOverlay = document.getElementById("imageOverlay"); // Get the image overlay div
+let largeGuessedImage = document.getElementById("largeGuessedImage"); // Get the large image inside the overlay
+
+let cars = []; // This array is not used in the current version as car info comes from Cloudinary
+let currentCar; // This variable is not used in the current version
+let CarMake, CarModel; // These will hold the actual make and model from Cloudinary
+let currentGuessAttempts;
+let uniqueCode;
+let MakeCorrect = false; // This variable is not directly used to control logic
+let ModelCorrect = false; // This variable is not directly used to control logic
+const maxGuessAttempts = 5;
+const revealPercentages = [20, 40, 60, 80, 100]; // This array is not used in the current version
+let ImageURLStart;
+let ImageURLEnd = '.png';
+let guessedImageUrls = []; // Array to store URLs of previously guessed images
+let shareableResultsHistory = []; // Array to store shareable tick/cross results
+
+/**
+ * Starts a new game.
+ * Resets game state, fetches car make and model from Cloudinary,
+ * and loads the initial cropped image.
+ */
+async function startNewGame() {
+  uniqueCode = document.getElementById('uniqueCode').value;
+  currentGuessAttempts = 1;
+  // Clear previous results and enable input fields/button
+  resultText.textContent = "";
+  guessMake.disabled = false;
+  guessMake.value = "";
+  guessModel.disabled = false;
+  guessModel.value = "";
+  guessButton.disabled = false;
+  getHintButton.disabled = false; // Enable hint button for a new game
+  hintText.textContent = ""; // Clear any previous hint
+
+  // Clear the answer table
+  const answerTableBody = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
+  answerTableBody.innerHTML = '';
+
+  // Clear guessed images
+  guessedImageUrls = [];
+  displayGuessedImages(); // Update the display
+
+  // Clear shareable results
+  shareableResultsHistory = [];
+  updateShareableResults(); // Update the shareable results textarea
+
+  // Fetch car make and model from Cloudinary text file
+  try {
+    await getInfoFromCloudinaryTextFile();
+    console.log('Make:', CarMake, ', Model:', CarModel);
+  } catch (error) {
+    console.error('Text file download error:', error);
+    resultText.textContent = "Error loading car data. Please check the unique code or ensure the file exists on Cloudinary.";
+    // Disable game interaction if data loading fails
+    guessMake.disabled = true;
+    guessModel.disabled = true;
+    guessButton.disabled = true;
+    getHintButton.disabled = true;
+    return;
+  }
+
+  // Construct the base image URL
+  ImageURLStart = `https://res.cloudinary.com/nickrobberts/image/upload/ciardleImage${uniqueCode}`;
+
+  // Load the initial cropped image (first reveal stage)
+  carImage.src = ImageURLStart + '1' + ImageURLEnd;
+}
+
+/**
+ * Fetches car make and model from a Cloudinary text file.
+ * @returns {Promise<Object>} A promise that resolves with an object containing string1 (Make) and string2 (Model).
+ */
+function getInfoFromCloudinaryTextFile() {
+  const cloudName = 'nickrobberts';
+  const publicId = 'ciardleText' + uniqueCode;
+  // Cloudinary raw file URL format
+  const downloadUrl = `https://res.cloudinary.com/${cloudName}/raw/upload/${publicId}`;
+
+  return new Promise(async (resolve, reject) => {
+    if (!cloudName || !publicId) {
+      reject(new Error('Cloud name and public ID are required.'));
+      return;
+    }
+
+    try {
+      const response = await fetch(downloadUrl);
+
+      if (!response.ok) {
+        reject(new Error(`Failed to download file: ${response.statusText}. Check if the unique code is correct or if the file exists.`));
+        return;
+      }
+
+      const text = await response.text();
+      const strings = text.split('\n').map(s => s.trim()); // Split by newline and trim whitespace
+
+      if (strings.length >= 2) {
+        CarMake = strings[0];
+        CarModel = strings[1];
+        resolve({ string1: strings[0], string2: strings[1] });
+      } else {
+        reject(new Error('File does not contain at least two strings (Make and Model).'));
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+/**
+ * Checks the user's guess against the actual car make and model.
+ * Updates the game state, image, and displays results.
+ */
+function checkGuess() {
+  const userGuessMake = guessMake.value;
+  const userGuessModel = guessModel.value;
+
+  // Add current image to guessed images before checking
+  // Only add if it's not already the last one (to avoid duplicates from repeated guesses without image change)
+  if (carImage.src && guessedImageUrls[guessedImageUrls.length - 1] !== carImage.src) {
+    guessedImageUrls.push(carImage.src);
+    displayGuessedImages();
+  }
+
+  const userGuessMakeCorrect = approximateMatch(userGuessMake, CarMake);
+  const userGuessModelCorrect = approximateMatch(userGuessModel, CarModel);
+
+  // Determine the HTML for the tick/cross icons for display on the page
+  const makeIconHtml = userGuessMakeCorrect ? '<span class="tick">&#10003;</span>' : '<span class="cross">&#10007;</span>';
+  const modelIconHtml = userGuessModelCorrect ? '<span class="tick">&#10003;</span>' : '<span class="cross">&#10007;</span>';
+
+  // Add the guess to the answer table with styled icons
+  addAnswerRow(
+    userGuessMake + ' ' + makeIconHtml,
+    userGuessModel + ' ' + modelIconHtml
+  );
+
+  resultText.innerHTML = `Make: ${makeIconHtml}, Model: ${modelIconHtml}`;
+
+  // Determine the emojis for shareable results
+  const makeEmoji = userGuessMakeCorrect ? '🟩' : '🟥';
+  const modelEmoji = userGuessModelCorrect ? '🟩' : '🟥';
+
+  // Add to shareable results history (using emojis for copy-paste graphical appeal)
+  shareableResultsHistory.push(`Attempt ${currentGuessAttempts}: Make ${makeEmoji}, Model ${modelEmoji}`);
+  updateShareableResults();
+
+  if (userGuessMakeCorrect && userGuessModelCorrect) {
+    resultText.textContent = `Correct! The car was a ${CarMake} ${CarModel}.`;
+    carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
+    // Disable inputs and button on correct guess
+    guessMake.disabled = true;
+    guessModel.disabled = true;
+    guessButton.disabled = true;
+    getHintButton.disabled = true; // Disable hint button after correct guess
+  } else {
+    currentGuessAttempts++;
+    if (currentGuessAttempts <= maxGuessAttempts) {
+      // Load the next cropped image based on attempts
+      carImage.src = ImageURLStart + currentGuessAttempts + ImageURLEnd;
+    } else {
+      resultText.textContent = `Out of guesses! The answer was ${CarMake} ${CarModel}.`;
+      carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
+      // Disable inputs and button on out of guesses
+      guessMake.disabled = true;
+      guessModel.disabled = true;
+      guessButton.disabled = true;
+      getHintButton.disabled = true; // Disable hint button if out of guesses
+    }
+  }
+}
+
+/**
+ * Adds a new row to the answer table with the make and model strings.
+ * @param {string} makeHtml - The make string (can contain HTML for icons) to display.
+ * @param {string} modelHtml - The model string (can contain HTML for icons) to display.
+ */
+function addAnswerRow(makeHtml, modelHtml) {
+  const tableBody = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
+  const newRow = tableBody.insertRow();
+  const cell1 = newRow.insertCell(0);
+  const cell2 = newRow.insertCell(1);
+
+  cell1.innerHTML = makeHtml; // Use innerHTML to render the span tags
+  cell2.innerHTML = modelHtml; // Use innerHTML to render the span tags
+}
+
+/**
+ * Displays the images stored in `guessedImageUrls` in the `guessedImagesContainer`.
+ * Each image is given a click handler to open the large view.
+ */
+function displayGuessedImages() {
+  const container = document.getElementById("guessedImagesContainer");
+  container.innerHTML = ''; // Clear previous images
+
+  guessedImageUrls.forEach(url => {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'Guessed Car Image';
+    img.classList.add('guessed-image-item');
+    // Attach click listener to show large image
+    img.onclick = () => showLargeImage(url);
+    container.appendChild(img);
+  });
+}
+
+/**
+ * Shows a large version of the image in an overlay.
+ * @param {string} imageUrl - The URL of the image to display.
+ */
+function showLargeImage(imageUrl) {
+  largeGuessedImage.src = imageUrl;
+  imageOverlay.classList.add('visible'); // Use 'visible' class for transition
+}
+
+/**
+ * Hides the large image overlay.
+ */
+function hideLargeImage() {
+  imageOverlay.classList.remove('visible'); // Use 'visible' class for transition
+}
+
+
+/**
+ * Updates the content of the shareable results textarea.
+ */
+function updateShareableResults() {
+  const textarea = document.getElementById("shareableResultsTextarea");
+  // Construct the game URL with the current uniqueCode
+  const gameUrl = `https://nrobbert.github.io/Ciardle/ciardle.html?code=${uniqueCode || 'test'}`; // Default to 'test' if uniqueCode is not set
+
+  // Add a header and footer for better context when copied
+  const header = `Ciardle Results (Code: ${uniqueCode || 'N/A'})\n`;
+  const footer = `\nPlay Ciardle at ${gameUrl}`;
+  textarea.value = header + shareableResultsHistory.join('\n') + footer;
+}
+
+/**
+ * Copies the content of the shareable results textarea to the clipboard.
+ */
+function copyShareableResults() {
+  const textarea = document.getElementById("shareableResultsTextarea");
+  textarea.select();
+  textarea.setSelectionRange(0, 99999); // For mobile devices
+
+  try {
+    document.execCommand('copy');
+    const copyMessage = document.getElementById("copyMessage");
+    copyMessage.classList.remove('hidden');
+    setTimeout(() => {
+      copyMessage.classList.add('hidden');
+    }, 2000); // Hide message after 2 seconds
+  } catch (err) {
+    console.error('Failed to copy text: ', err);
+    // Fallback for browsers where execCommand might not work or is deprecated
+    // In a real app, you might provide a manual copy instruction or use navigator.clipboard.writeText (requires secure context)
+  }
+}
+
+/**
+ * Calls the Gemini API to get a subtle hint about the car.
+ */
+async function getCarHint() {
+  if (!CarMake || !CarModel) {
+    hintText.textContent = "Please start a game first to get a hint.";
+    return;
+  }
+
+  hintText.textContent = "Generating hint... please wait.";
+  getHintButton.disabled = true; // Disable button while generating
+
+  let chatHistory = [];
+  const prompt = `The car is a ${CarMake} ${CarModel}. Provide a subtle hint about the car's make or model without explicitly stating either. Make it concise and helpful for a guessing game. For example, if it's a Ford Mustang, you could say "This car is often associated with American muscle." or "Its logo features an animal known for speed."`;
+  chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+  const payload = { contents: chatHistory };
+  const apiKey = ""; // Leave as-is for Canvas environment
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (result.candidates && result.candidates.length > 0 &&
+        result.candidates[0].content && result.candidates[0].content.parts &&
+        result.candidates[0].content.parts.length > 0) {
+      const generatedHint = result.candidates[0].content.parts[0].text;
+      hintText.textContent = `Hint: ${generatedHint}`;
+    } else {
+      hintText.textContent = "Could not generate a hint. Please try again.";
+      console.error("Gemini API response structure unexpected:", result);
+    }
+  } catch (error) {
+    hintText.textContent = "Error generating hint. Please check console for details.";
+    console.error("Error calling Gemini API:", error);
+  } finally {
+    getHintButton.disabled = false; // Re-enable button after response
+  }
+}
+
+
+/**
+ * Checks for approximate match between two strings using Levenshtein distance.
+ * @param {string} str1 - The first string.
+ * @param {string} str2 - The second string.
+ * @param {number} [tolerance=0.8] - The similarity threshold (0 to 1).
+ * @returns {boolean} True if the strings are approximately similar, false otherwise.
+ */
+function approximateMatch(str1, str2, tolerance = 0.8) {
+  // Normalize strings: lowercase and remove non-alphanumeric characters
+  const normalize = (str) =>
+    str.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  const normalizedStr1 = normalize(str1);
+  const normalizedStr2 = normalize(str2);
+
+  if (!normalizedStr1 || !normalizedStr2) {
+    return normalizedStr1 === normalizedStr2; // Handle empty string cases
+  }
+
+  // Calculate Levenshtein distance (edit distance)
+  const levenshteinDistance = (s1, s2) => {
+    const matrix = Array(s1.length + 1)
+      .fill(null)
+      .map(() => Array(s2.length + 1).fill(null));
+
+    for (let i = 0; i <= s1.length; i++) {
+      matrix[i][0] = i;
+    }
+    for (let j = 0; j <= s2.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= s1.length; i++) {
+      for (let j = 1; j <= s2.length; j++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1, // deletion
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j - 1] + cost // substitution
+        );
+      }
+    }
+
+    return matrix[s1.length][s2.length];
+  };
+
+  const distance = levenshteinDistance(normalizedStr1, normalizedStr2);
+  const maxLength = Math.max(normalizedStr1.length, normalizedStr2.length);
+
+  // Calculate similarity
+  const similarity = 1 - distance / maxLength;
+  console.log(`Check: "${str1}", "${str2}": ${similarity} (limit=${tolerance})`);
+
+  return similarity >= tolerance;
+}
+
+// Initial calls to display any existing data (will be empty on first load)
+displayGuessedImages();
+updateShareableResults();
+
+// New: Check for 'code' parameter in URL on page load
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const codeParam = urlParams.get('code');
+  if (codeParam) {
+    document.getElementById('uniqueCode').value = codeParam;
+    // Programmatically click the "Go!" button
+    document.getElementById('goButton').click();
+  }
+});
+</script>
+
+</body>
+</html>
