@@ -3,144 +3,257 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ciardle</title>
+<title>Ciardle - The Car Guessing Game</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Mono&display=swap');
+
   /* Base Styles for the Body */
   body {
-    font-family: "Inter", sans-serif;
+    font-family: 'Inter', sans-serif;
     text-align: center;
-    font-size: 1.5rem;
-    background-color: #eef2f6; /* Lighter background for a cleaner look */
+    background: linear-gradient(to bottom right, #e0f2f7, #c1e4ee); /* Soft blue gradient background */
     color: #2d3748; /* Darker text for better contrast */
-    padding: 15px; /* Slightly reduced overall padding */
+    padding: 20px; /* Increased overall padding */
     line-height: 1.6;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh; /* Ensure body takes full viewport height */
+    min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scroll */
   }
 
   /* Headings */
   h1, h2 {
     color: #2a4365; /* Darker blue for headings */
-    font-weight: 700; /* Bold headings */
-    margin-bottom: 1rem; /* Reduced margin-bottom */
+    font-weight: 800; /* Extra bold headings */
+    margin-bottom: 1.5rem; /* Increased margin-bottom */
+    letter-spacing: -0.02em; /* Slightly tighter letter spacing */
+  }
+
+  h1 {
+    font-size: 3.5rem; /* Larger main title */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1); /* Subtle text shadow */
+  }
+
+  h2 {
+    font-size: 2.2rem; /* Larger section titles */
+    margin-top: 2.5rem; /* More space above sections */
   }
 
   /* Buttons */
   button {
-    font-size: 1.05rem; /* Slightly smaller font for buttons */
-    padding: 10px 20px; /* Reduced padding */
-    border-radius: 8px; /* Slightly less rounded corners */
+    font-size: 1.1rem; /* Slightly larger font for buttons */
+    padding: 14px 28px; /* More generous padding */
+    border-radius: 12px; /* More rounded corners */
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600; /* Semi-bold text */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Slightly less prominent shadow */
-    background-image: linear-gradient(to right, #4CAF50 0%, #45a049 100%); /* Green gradient */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
+    font-weight: 700; /* Bold text */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* More prominent shadow */
     color: white;
+    background-size: 200% auto; /* For gradient animation */
   }
 
   button:hover {
-    transform: translateY(-1px); /* Subtle lift effect */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
-    background-image: linear-gradient(to right, #45a049 0%, #3e8e41 100%); /* Darker gradient on hover */
+    transform: translateY(-3px); /* More pronounced lift effect */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    background-position: right center; /* Move gradient on hover */
   }
 
   /* Specific button colors */
-  .btn-blue {
+  .btn-primary {
+    background-image: linear-gradient(to right, #4CAF50 0%, #388E3C 100%); /* Green gradient */
+  }
+  .btn-primary:hover {
+    background-image: linear-gradient(to right, #388E3C 0%, #2E7D32 100%);
+  }
+
+  .btn-secondary {
     background-image: linear-gradient(to right, #4299e1 0%, #3182ce 100%); /* Blue gradient */
   }
-  .btn-blue:hover {
+  .btn-secondary:hover {
     background-image: linear-gradient(to right, #3182ce 0%, #2b6cb0 100%);
   }
 
-  .btn-purple {
+  .btn-accent {
     background-image: linear-gradient(to right, #805ad5 0%, #6b46c1 100%); /* Purple gradient */
   }
-  .btn-purple:hover {
+  .btn-accent:hover {
     background-image: linear-gradient(to right, #6b46c1 0%, #553c9a 100%);
   }
 
-  .btn-orange {
+  .btn-hint {
     background-image: linear-gradient(to right, #f6ad55 0%, #ed8936 100%); /* Orange gradient for hint */
   }
-  .btn-orange:hover {
+  .btn-hint:hover {
     background-image: linear-gradient(to right, #ed8936 0%, #dd6b20 100%);
   }
 
   /* Input Fields */
   input[type="text"] {
-    font-size: 1.05rem; /* Slightly smaller font for inputs */
-    padding: 10px; /* Reduced padding */
-    margin: 6px; /* Reduced margin */
+    font-size: 1.1rem; /* Slightly larger font for inputs */
+    padding: 12px 15px; /* More padding */
+    margin: 8px; /* More margin */
     border: 1px solid #cbd5e0; /* Lighter border */
-    border-radius: 8px; /* Slightly less rounded corners */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
-    transition: all 0.2s ease-in-out;
-    max-width: 220px; /* Max width for inputs */
+    border-radius: 10px; /* More rounded corners */
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08); /* More pronounced inner shadow */
+    transition: all 0.3s ease-in-out;
+    max-width: 250px; /* Increased max width for inputs */
+    background-color: #ffffff;
+    color: #2d3748;
   }
 
   input[type="text"]:focus {
     border-color: #63b3ed; /* Blue border on focus */
-    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.4); /* Smaller focus ring */
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Larger, softer focus ring */
     outline: none;
+  }
+
+  /* Card-like Sections */
+  .card-section {
+    background-color: #ffffff;
+    padding: 30px; /* More padding */
+    border-radius: 18px; /* More rounded corners for cards */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger, softer shadow */
+    margin-bottom: 30px; /* More space between sections */
+    width: 100%;
+    max-width: 700px; /* Adjusted max width for better flow */
+    border: 1px solid #e2e8f0; /* Subtle border */
+  }
+
+  /* Main Game Area Layout */
+  #mainGameArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px; /* Increased gap */
+    width: 100%;
+    max-width: 1100px; /* Wider layout for main game */
+    margin-bottom: 30px;
+  }
+
+  /* Main Car Image */
+  #carImage {
+    width: 100%; /* Allow it to take full width of its flex container */
+    min-height: 500px; /* IMPORTANT: Minimum height */
+    object-fit: contain; /* IMPORTANT: Make it contain the image, no cropping */
+    border: 3px solid #4a5568;
+    border-radius: 18px;
+    margin: 0; /* Remove auto margin when in flex row */
+    display: block;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    cursor: pointer;
+  }
+
+  #carImage:hover {
+    transform: scale(1.01); /* Subtle zoom on hover */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* Even stronger shadow on hover */
+  }
+
+  /* Game Controls and Results */
+  .game-controls-and-results {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px; /* Added padding to this section */
+    border-radius: 18px;
+    background-color: #f7fafc; /* Lighter background for controls */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure it takes full width within its flex container */
+  }
+
+  /* Result Text */
+  #resultText {
+    font-size: 1.4rem; /* Larger result text */
+    font-weight: 600;
+    margin-bottom: 1.5rem; /* More space below */
+    color: #4a5568;
+  }
+
+  /* Guess Input Container */
+  #guessInputContainer {
+    display: flex; /* Default to flex for alignment */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center; /* Center inputs */
+    gap: 15px; /* Space between inputs */
+    width: 100%;
+    margin-bottom: 20px; /* Space below inputs */
+  }
+
+  /* Hint Section */
+  #hintContainer {
+    margin-top: 20px; /* More space above hint */
+    padding: 18px; /* More padding */
+    background-color: #fff8e1; /* Softer yellow for hint */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    width: 100%;
+    border: 1px solid #ffe082; /* Subtle border */
+    display: block; /* Ensure it's block by default */
+  }
+
+  #hintText {
+    font-style: italic;
+    color: #a07f00; /* Darker yellow for hint text */
+    margin-top: 10px; /* More space */
+    min-height: 25px; /* Ensure space even when empty */
+    font-size: 1.05rem; /* Slightly larger hint text */
   }
 
   /* Table Styling */
   #answerTable {
     width: 100%;
-    max-width: 600px; /* Slightly narrower table */
-    margin: 20px auto; /* Reduced margin */
+    max-width: 700px; /* Wider table */
+    margin: 30px auto; /* More margin */
     border-collapse: separate;
     border-spacing: 0;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
-    border-radius: 12px; /* Slightly less rounded table corners */
-    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    overflow: hidden; /* Ensures rounded corners clip content */
     background-color: #ffffff;
+    border: 1px solid #e2e8f0;
   }
 
   #answerTable th, #answerTable td {
     border: none;
-    padding: 12px; /* Reduced padding */
+    padding: 15px; /* More padding */
     text-align: center;
+    font-size: 1.1rem;
   }
 
   #answerTable th {
-    background-color: #ebf4ff;
+    background-color: #e0f7fa; /* Lighter blue for header */
     font-weight: 700;
-    color: #2c5282;
+    color: #00796b; /* Teal color for header text */
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
   }
 
   #answerTable tr:nth-child(even) {
-    background-color: #f7fafc;
+    background-color: #f0f8f9; /* Even lighter for alternating rows */
   }
 
   #answerTable tr:hover {
-    background-color: #e2e8f0;
+    background-color: #d4e7e9; /* Subtle hover effect */
   }
 
-  /* Main Car Image */
-  #carImage {
-    width: 100%;
-    max-width: 450px; /* Smaller image */
-    height: auto;
-    max-height: 450px;
-    object-fit: contain;
-    border: 2px solid #4a5568; /* Thinner border */
-    border-radius: 12px; /* Slightly less rounded corners */
-    margin: 20px auto; /* Reduced margin */
-    display: block;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Softer shadow */
-    transition: transform 0.3s ease-in-out;
-    cursor: pointer; /* Indicate clickable */
+  /* Custom styles for ticks and crosses */
+  .tick {
+    color: #28a745; /* Bootstrap success green */
+    font-weight: 900;
+    font-size: 1.3em; /* Larger */
+    margin-left: 6px; /* More space */
   }
 
-  #carImage:hover {
-    transform: scale(1.005); /* Even subtler zoom on hover */
+  .cross {
+    color: #dc3545; /* Bootstrap danger red */
+    font-weight: 900;
+    font-size: 1.3em;
+    margin-left: 6px;
   }
 
   /* Guessed Images Container */
@@ -148,146 +261,73 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 15px; /* Reduced gap */
-    margin-top: 25px; /* Reduced margin */
-    padding: 20px; /* Reduced padding */
+    gap: 20px; /* More gap */
+    margin-top: 30px; /* More margin */
+    padding: 25px; /* More padding */
     background-color: #ffffff;
-    border-radius: 12px; /* Slightly less rounded */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
-    max-width: 800px; /* Reduced max width */
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    max-width: 900px; /* Wider container */
     width: 100%;
+    border: 1px solid #e2e8f0;
   }
 
   .guessed-image-item {
-    width: 130px; /* Smaller guessed images */
-    height: 130px;
+    width: 150px; /* Larger guessed images */
+    height: 150px;
     object-fit: cover;
-    border: 1px solid #a0aec0; /* Thinner border */
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    border: 2px solid #a0aec0; /* Thicker border */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
     transition: all 0.3s ease;
-    cursor: pointer; /* Indicate clickable */
+    cursor: pointer;
   }
 
   .guessed-image-item:hover {
-    transform: scale(1.05) rotate(1deg); /* Less pronounced hover effect */
+    transform: scale(1.08) rotate(2deg); /* More pronounced hover effect */
     border-color: #4299e1;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
   }
 
   /* Shareable Results Container */
   #shareableResultsContainer {
-    margin-top: 25px; /* Reduced margin */
-    padding: 20px; /* Reduced padding */
-    background-color: #edf2f7;
-    border-radius: 12px; /* Slightly less rounded */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    max-width: 600px; /* Reduced max width */
+    margin-top: 30px; /* More margin */
+    padding: 25px; /* More padding */
+    background-color: #f0f4f8; /* Lighter background */
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    max-width: 700px; /* Wider container */
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    display: none; /* Hidden by default */
+    border: 1px solid #d0dce7;
+  }
+
+  #shareableResultsContainer.visible {
+    display: block; /* Show when visible class is added */
   }
 
   #shareableResultsTextarea {
     width: 100%;
-    height: 120px; /* Shorter textarea */
-    padding: 12px; /* Reduced padding */
+    height: 150px; /* Taller textarea */
+    padding: 15px; /* More padding */
     border: 1px solid #cbd5e0;
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: 'Roboto Mono', monospace;
-    font-size: 1rem; /* Slightly smaller font */
+    font-size: 1.05rem; /* Slightly larger font */
     resize: vertical;
-    margin-bottom: 12px; /* Reduced margin */
+    margin-bottom: 15px; /* More margin */
     background-color: #ffffff;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
   }
 
-  /* Custom styles for ticks and crosses */
-  .tick {
-    color: #10b981;
-    font-weight: 900;
-    font-size: 1.2em; /* Slightly smaller */
-    margin-left: 4px; /* Reduced space */
-  }
-
-  .cross {
-    color: #ef4444;
-    font-weight: 900;
-    font-size: 1.2em;
-    margin-left: 4px;
-  }
-
-  /* Utility Classes (for general layout and spacing) */
-  .container-section {
-    background-color: #ffffff;
-    padding: 20px; /* Reduced padding */
-    border-radius: 12px; /* Slightly less rounded */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px; /* Reduced margin */
-    width: 100%;
-    max-width: 650px; /* Reduced max width */
-  }
-
-  /* Hint Section Styling */
-  #hintContainer {
-    margin-top: 15px; /* Reduced margin */
-    padding: 12px; /* Reduced padding */
-    background-color: #fffbeb;
-    border-radius: 8px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07); /* Softer shadow */
-    max-width: 550px; /* Reduced max width */
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid #fbd38d;
-  }
-
-  #hintText {
-    font-style: italic;
-    color: #975a16;
-    margin-top: 8px; /* Reduced margin */
-    min-height: 20px; /* Ensure space even when empty */
-    font-size: 0.95rem; /* Slightly smaller hint text */
-  }
-
-  /* Main game area flex container */
-  #mainGameArea {
-    display: flex;
-    flex-direction: column; /* Default to column on small screens */
-    align-items: center;
-    gap: 20px; /* Space between image and controls */
-    width: 100%;
-    max-width: 1000px; /* Allow wider layout on large screens */
-    margin-bottom: 20px;
-  }
-
-  @media (min-width: 768px) {
-    #mainGameArea {
-      flex-direction: row; /* Row layout on medium screens and up */
-      justify-content: center;
-      align-items: flex-start; /* Align items to the top */
-    }
-
-    #carImage {
-      margin: 0; /* Remove auto margin when in flex row */
-      flex-shrink: 0; /* Prevent image from shrinking too much */
-      width: 45%; /* Take up 45% of the main game area */
-      max-width: 400px; /* Cap max width */
-      max-height: 400px; /* Cap max height */
-    }
-
-    .game-controls-and-results {
-      flex-grow: 1; /* Allow controls to take remaining space */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 0; /* Align with image top */
-      max-width: 500px; /* Limit width of controls column */
-    }
-
-    input[type="text"] {
-      width: 48%; /* Adjust width for two inputs side by side within flex */
-    }
+  /* Copy Message */
+  #copyMessage {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #28a745;
+    margin-top: 10px;
   }
 
   /* Image Overlay Styles */
@@ -297,14 +337,14 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+    background-color: rgba(0, 0, 0, 0.85); /* Darker overlay */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Ensure it's on top of other content */
+    z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.4s ease, visibility 0.4s ease; /* Slower transition */
   }
 
   #imageOverlay.visible {
@@ -313,102 +353,130 @@
   }
 
   #largeGuessedImage {
-    max-width: 95%; /* Increased max-width */
-    max-height: 95%; /* Increased max-height */
-    object-fit: contain;
-    border: 4px solid white; /* White border for the large image */
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Glowing effect */
-    cursor: pointer; /* Indicate it's clickable to close */
+    height: 500px; /* Fixed height for enlarged image */
+    width: auto; /* Maintain aspect ratio */
+    max-width: 90%; /* Adjusted max-width to give more breathing room */
+    object-fit: contain; /* Ensure the whole image is visible within the 500px height */
+    border: 6px solid white; /* Thicker white border */
+    border-radius: 20px; /* More rounded */
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.7); /* Stronger glow */
+    cursor: pointer;
   }
 
-  /* Responsive adjustments for the "Enter Code" section */
-  #Code .flex-row-nowrap {
-    display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
-    align-items: center;
-    justify-content: center; /* Center content horizontally */
-  }
+  /* Responsive adjustments */
+  @media (min-width: 768px) {
+    #mainGameArea {
+      flex-direction: row; /* Row layout on medium screens and up */
+      justify-content: center;
+      align-items: flex-start; /* Align items to the top */
+    }
 
-  #Code .flex-row-nowrap label {
-    margin-right: 10px; /* Space between label and input */
-    white-space: nowrap; /* Prevent label from wrapping */
-  }
+    #carImage {
+      width: 50%; /* Take up 50% of the main game area */
+      /* Removed max-width: 550px; to allow it to grow more */
+    }
 
-  #Code .flex-row-nowrap input {
-    flex-grow: 1; /* Allow input to grow */
-    max-width: 150px; /* Adjust max-width for input to keep it compact */
-    margin: 0 6px; /* Adjust margins to keep tight */
-  }
+    .game-controls-and-results {
+      padding: 30px;
+      max-width: 550px; /* Limit width of controls column */
+    }
 
-  #Code .flex-row-nowrap button {
-    flex-shrink: 0; /* Prevent button from shrinking */
-    margin: 0; /* Remove extra margins */
+    input[type="text"] {
+      width: 48%; /* Adjust width for two inputs side by side within flex */
+      margin: 0 8px; /* Adjust margins */
+    }
+
+    #guessInputContainer {
+      flex-wrap: nowrap; /* Prevent wrapping on larger screens */
+    }
   }
 
   @media (max-width: 480px) {
-    #Code .flex-row-nowrap input {
-      max-width: 100px; /* Even smaller input on very small screens */
+    h1 {
+      font-size: 2.5rem;
     }
-    #Code .flex-row-nowrap label {
-      font-size: 0.9rem; /* Smaller font for label on small screens */
+    h2 {
+      font-size: 1.8rem;
+    }
+    button {
+      font-size: 0.95rem;
+      padding: 12px 20px;
+    }
+    input[type="text"] {
+      font-size: 0.95rem;
+      padding: 10px;
+      max-width: 100%; /* Allow inputs to take full width on small screens */
+    }
+    #carImage {
+      min-height: 350px; /* Smaller min-height on very small screens */
+    }
+    .guessed-image-item {
+      width: 100px;
+      height: 100px;
+    }
+    #largeGuessedImage {
+      height: 400px; /* Smaller enlarged image height on very small screens */
     }
   }
-
 </style>
 </head>
 <body>
 
 <h1 class="text-4xl font-bold mb-6 text-gray-800">Ciardle</h1>
 
-<div id="Code" class="container-section flex flex-col items-center">
-  <div class="flex-row-nowrap w-full max-w-md"> <!-- Added flex-row-nowrap -->
-    <label for="uniqueCode" class="text-lg font-medium">Enter code:</label>
-    <input type="text" id="uniqueCode" value="test">
-    <button id="goButton" onclick="startNewGame()" class="btn-blue">Go!</button>
+<div id="Code" class="card-section flex flex-col items-center">
+  <div class="flex flex-col sm:flex-row items-center justify-center w-full max-w-md">
+    <label for="uniqueCode" class="text-lg font-medium mb-2 sm:mb-0 sm:mr-4">Enter code:</label>
+    <input type="text" id="uniqueCode" value="test" class="w-full sm:w-auto">
+    <button id="goButton" onclick="startNewGame()" class="btn-secondary mt-4 sm:mt-0 sm:ml-4">Go!</button>
   </div>
 </div>
 
 <div id="mainGameArea">
-  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onclick="showLargeImage(this.src)"> <!-- Added onclick -->
+  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onclick="showLargeImage(this.src)">
 
   <div class="game-controls-and-results">
     <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
 
-    <div class="flex flex-col sm:flex-row items-center w-full max-w-md mb-4">
-      <input type="text" id="guessMake" placeholder="Enter Make" class="flex-grow">
-      <input type="text" id="guessModel" placeholder="Enter Model" class="flex-grow">
+    <div id="guessInputContainer">
+      <input type="text" id="guessMake" placeholder="Enter Make">
+      <input type="text" id="guessModel" placeholder="Enter Model">
     </div>
-    <button id="guessButton" onclick="checkGuess()" class="mb-4 w-full sm:w-auto">Guess</button>
+    <button id="guessButton" onclick="checkGuess()" class="btn-primary w-full sm:w-auto">Guess</button>
 
     <!-- Hint Section -->
     <div id="hintContainer">
-      <button id="getHintButton" onclick="getCarHint()" class="btn-orange mb-2">Get Hint ✨</button>
+      <button id="getHintButton" onclick="getCarHint()" class="btn-hint mb-2">Get Hint ✨</button>
       <p id="hintText" class="text-base"></p>
     </div>
   </div>
 </div>
 
-<table id="answerTable">
-  <thead>
-    <tr>
-      <th>Make</th>
-      <th>Model</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-
-<h2 class="text-2xl font-bold mt-8 mb-4 text-gray-700">Previous Guesses</h2>
-<div id="guessedImagesContainer">
-  <!-- Guessed images will be displayed here -->
+<div class="card-section">
+  <h2 class="text-2xl font-bold mt-0 mb-4 text-gray-700">Guess History</h2>
+  <table id="answerTable">
+    <thead>
+      <tr>
+        <th>Make</th>
+        <th>Model</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 </div>
 
-<h2 class="text-2xl font-bold mt-8 mb-4 text-gray-700">Shareable Results</h2>
-<div id="shareableResultsContainer">
+<div class="card-section">
+  <h2 class="text-2xl font-bold mt-0 mb-4 text-gray-700">Previous Guesses Visuals</h2>
+  <div id="guessedImagesContainer">
+    <!-- Guessed images will be displayed here -->
+  </div>
+</div>
+
+<h2 id="shareableResultsTitle" class="text-2xl font-bold mt-8 mb-4 text-gray-700" style="display: none;">Shareable Results</h2>
+<div id="shareableResultsContainer" class="card-section">
   <textarea id="shareableResultsTextarea" readonly placeholder="Your game results will appear here..."></textarea>
-  <button onclick="copyShareableResults()" class="btn-purple">Copy Results</button>
+  <button onclick="copyShareableResults()" class="btn-accent">Copy Results</button>
   <p id="copyMessage" class="text-sm text-green-700 mt-2 hidden">Copied to clipboard!</p>
 </div>
 
@@ -429,6 +497,9 @@ let getHintButton = document.getElementById("getHintButton"); // Get the hint bu
 let hintText = document.getElementById("hintText"); // Get the hint text paragraph
 let imageOverlay = document.getElementById("imageOverlay"); // Get the image overlay div
 let largeGuessedImage = document.getElementById("largeGuessedImage"); // Get the large image inside the overlay
+let shareableResultsContainer = document.getElementById("shareableResultsContainer"); // Get the shareable results container
+let shareableResultsTitle = document.getElementById("shareableResultsTitle"); // Get the shareable results title
+let guessInputContainer = document.getElementById("guessInputContainer"); // New: Get the container for guess inputs
 
 let cars = []; // This array is not used in the current version as car info comes from Cloudinary
 let currentCar; // This variable is not used in the current version
@@ -461,6 +532,17 @@ async function startNewGame() {
   guessButton.disabled = false;
   getHintButton.disabled = false; // Enable hint button for a new game
   hintText.textContent = ""; // Clear any previous hint
+
+  // Hide shareable results and its title at the start of a new game
+  shareableResultsContainer.style.display = 'none'; // Use style.display for direct control
+  shareableResultsTitle.style.display = 'none';
+
+  // Show guess input and buttons
+  guessInputContainer.style.display = 'flex'; // Show the container for guess inputs
+  guessButton.style.display = 'block';
+  getHintButton.style.display = 'block';
+  document.getElementById("hintContainer").style.display = 'block'; // Ensure hint container is also shown
+
 
   // Clear the answer table
   const answerTableBody = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
@@ -537,6 +619,21 @@ function getInfoFromCloudinaryTextFile() {
 }
 
 /**
+ * Ends the game by disabling inputs/buttons and showing shareable results.
+ */
+function endGame() {
+  guessMake.disabled = true;
+  guessModel.disabled = true;
+  guessButton.disabled = true;
+  getHintButton.disabled = true; // Disable hint button
+  guessInputContainer.style.display = 'none'; // Hide the container for guess inputs
+  guessButton.style.display = 'none'; // Hide the guess button
+  document.getElementById("hintContainer").style.display = 'none'; // Hide the hint container
+  shareableResultsContainer.style.display = 'block'; // Show shareable results
+  shareableResultsTitle.style.display = 'block'; // Show shareable results title
+}
+
+/**
  * Checks the user's guess against the actual car make and model.
  * Updates the game state, image, and displays results.
  */
@@ -567,7 +664,7 @@ function checkGuess() {
   resultText.innerHTML = `Make: ${makeIconHtml}, Model: ${modelIconHtml}`;
 
   // Determine the emojis for shareable results
-  const makeEmoji = userGuessMakeCorrect ? '🟩' : '🟥';
+  const makeEmoji = userGuessMakeCorrect ? '🟩' : '�';
   const modelEmoji = userGuessModelCorrect ? '🟩' : '🟥';
 
   // Add to shareable results history (using emojis for copy-paste graphical appeal)
@@ -577,11 +674,7 @@ function checkGuess() {
   if (userGuessMakeCorrect && userGuessModelCorrect) {
     resultText.textContent = `Correct! The car was a ${CarMake} ${CarModel}.`;
     carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
-    // Disable inputs and button on correct guess
-    guessMake.disabled = true;
-    guessModel.disabled = true;
-    guessButton.disabled = true;
-    getHintButton.disabled = true; // Disable hint button after correct guess
+    endGame(); // End the game
   } else {
     currentGuessAttempts++;
     if (currentGuessAttempts <= maxGuessAttempts) {
@@ -590,11 +683,7 @@ function checkGuess() {
     } else {
       resultText.textContent = `Out of guesses! The answer was ${CarMake} ${CarModel}.`;
       carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
-      // Disable inputs and button on out of guesses
-      guessMake.disabled = true;
-      guessModel.disabled = true;
-      guessButton.disabled = true;
-      getHintButton.disabled = true; // Disable hint button if out of guesses
+      endGame(); // End the game
     }
   }
 }
@@ -813,3 +902,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+�
