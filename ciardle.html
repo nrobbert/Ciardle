@@ -208,7 +208,7 @@
   #answerTable {
     width: 100%;
     max-width: 700px; /* Wider table */
-    margin: 30px auto; /* More margin */
+    margin: 0 auto; /* Removed top/bottom margin, handled by parent container */
     border-collapse: separate;
     border-spacing: 0;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
@@ -262,7 +262,7 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px; /* More gap */
-    margin-top: 30px; /* More margin */
+    margin: 0 auto; /* Removed top/bottom margin, handled by parent container */
     padding: 25px; /* More padding */
     background-color: #ffffff;
     border-radius: 18px;
@@ -363,7 +363,20 @@
     cursor: pointer;
   }
 
-  /* Responsive adjustments */
+  /* New container for side-by-side sections */
+  #historyAndVisualsContainer {
+    display: flex;
+    flex-direction: column; /* Default to column on small screens */
+    gap: 30px; /* Space between sections */
+    width: 100%;
+    max-width: 1100px; /* Match main game area max-width */
+    margin-bottom: 30px;
+  }
+
+  #historyAndVisualsContainer .card-section {
+    margin-bottom: 0; /* Remove individual card-section bottom margin */
+  }
+
   @media (min-width: 768px) {
     #mainGameArea {
       flex-direction: row; /* Row layout on medium screens and up */
@@ -388,6 +401,26 @@
 
     #guessInputContainer {
       flex-wrap: nowrap; /* Prevent wrapping on larger screens */
+    }
+
+    /* Side-by-side for history and visuals */
+    #historyAndVisualsContainer {
+      flex-direction: row; /* Side-by-side on larger screens */
+      align-items: flex-start; /* Align items to the top */
+    }
+
+    #historyAndVisualsContainer > .card-section {
+      flex: 1; /* Each takes equal space */
+      max-width: 50%; /* Each takes up to 50% of the container */
+      margin-left: 15px; /* Half of gap for left item */
+      margin-right: 15px; /* Half of gap for right item */
+    }
+    /* Adjust margins for the first and last child to remove extra space */
+    #historyAndVisualsContainer > .card-section:first-child {
+        margin-left: 0;
+    }
+    #historyAndVisualsContainer > .card-section:last-child {
+        margin-right: 0;
     }
   }
 
@@ -452,24 +485,26 @@
   </div>
 </div>
 
-<div class="card-section">
-  <h2 class="text-2xl font-bold mt-0 mb-4 text-gray-700">Guess History</h2>
-  <table id="answerTable">
-    <thead>
-      <tr>
-        <th>Make</th>
-        <th>Model</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-</div>
+<div id="historyAndVisualsContainer">
+  <div class="card-section">
+    <h2 class="text-2xl font-bold mt-0 mb-4 text-gray-700">Guess History</h2>
+    <table id="answerTable">
+      <thead>
+        <tr>
+          <th>Make</th>
+          <th>Model</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 
-<div class="card-section">
-  <h2 class="text-2xl font-bold mt-0 mb-4 text-gray-700">Previous Guesses Visuals</h2>
-  <div id="guessedImagesContainer">
-    <!-- Guessed images will be displayed here -->
+  <div class="card-section">
+    <h2 class="text-2xl font-bold mt-0 mb-4 text-gray-700">Previous pictures</h2>
+    <div id="guessedImagesContainer">
+      <!-- Guessed images will be displayed here -->
+    </div>
   </div>
 </div>
 
@@ -664,7 +699,7 @@ function checkGuess() {
   resultText.innerHTML = `Make: ${makeIconHtml}, Model: ${modelIconHtml}`;
 
   // Determine the emojis for shareable results
-  const makeEmoji = userGuessMakeCorrect ? '🟩' : '�';
+  const makeEmoji = userGuessMakeCorrect ? '🟩' : '🟥';
   const modelEmoji = userGuessModelCorrect ? '🟩' : '🟥';
 
   // Add to shareable results history (using emojis for copy-paste graphical appeal)
@@ -902,4 +937,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-�
