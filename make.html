@@ -289,7 +289,10 @@
                 const prompt = "Generate a short, witty, and slightly teasing comment about a 'Designer' and their artistic skills, specifically mentioning crayons or felt-tips, suitable for a pop-up message in a game asset creation tool. Keep it lighthearted and humorous. Provide only one comment directly, without any introductory phrases or numbered/bulleted lists.";
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                 const payload = { contents: chatHistory };
-                const apiKey = ""; // Leave as-is for Canvas to provide
+                // IMPORTANT: For deployment outside of this Canvas environment (e.g., GitHub Pages),
+                // you MUST provide your actual Gemini API key here.
+                // Get your API key from: https://aistudio.google.com/app/apikey
+                const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Your Gemini API Key
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
