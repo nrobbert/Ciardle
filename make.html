@@ -104,8 +104,8 @@
 <!-- Brad Specific Pop-up -->
 <div id="bradPopup" class="modal-overlay" style="display: none;">
     <div class="modal-content">
-        <p id="bradMessage" class="text-lg text-gray-700">Ah, a Design Engineer! We appreciate your unique perspective, especially with crayons and felt-tips. Proceed with caution and creativity!</p>
-        <button onclick="agreeToProceed()" class="modal-button">I agree</button>
+        <p id="bradMessage" class="text-lg text-gray-700">Loading witty comment...</p>
+        <button id="agreeButton" onclick="agreeToProceed()" class="modal-button" style="display: none;">I agree</button>
     </div>
 </div>
 
@@ -213,6 +213,7 @@
     const appContainer = document.getElementById('app-container');
     const bradPopup = document.getElementById('bradPopup');
     const bradMessage = document.getElementById('bradMessage');
+    const agreeButton = document.getElementById('agreeButton');
 
 
     // Event listener for closing the custom message box
@@ -238,24 +239,85 @@
         }
     }
 
-    const bradMessages = [
-        "Ah, a Design Engineer! We appreciate your unique perspective, especially with crayons and felt-tips. Proceed with caution and creativity!",
-        "Greetings, Brad! Ready to transform your stick figures into game assets? Just remember, vector graphics are your friends!",
-        "Is that you, Brad? Hope you brought your imagination, and maybe a ruler this time. Just kidding... mostly!",
-        "Welcome, Brad! Don't worry, this tool handles all the complex stuff, so you can focus on the 'art' of it all. No actual drawing required!",
-        "Brad, is that you? Prepare to unleash your inner Picasso, but with less mess and more pixels. And fewer crayons, probably."
-    ];
+    /**
+     * Extracts the first meaningful line from a potentially multi-line AI response,
+     * ignoring common introductory phrases.
+     * @param {string} rawText The raw text received from the AI.
+     * @returns {string} The extracted witty comment.
+     */
+    function extractFirstWittyComment(rawText) {
+        const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        const introductoryPhrases = [
+            "Here are a few options, pick your favorite:",
+            "Here are a few options:",
+            "Here's a witty comment:",
+            "Option 1:",
+            "1.",
+            "- " // For bullet points
+        ];
+
+        for (const line of lines) {
+            let isIntroductory = false;
+            for (const phrase of introductoryPhrases) {
+                if (line.startsWith(phrase)) {
+                    isIntroductory = true;
+                    break;
+                }
+            }
+            if (!isIntroductory) {
+                return line; // Return the first line that is not an introductory phrase
+            }
+        }
+        // Fallback: if all lines were introductory or no lines, return a default
+        return lines.length > 0 ? lines[0] : "Couldn't fetch a witty comment. Perhaps the AI is still sharpening its crayons.";
+    }
 
     /**
      * Handles the user's response on the landing screen.
      * @param {boolean} isIndeedBrad True if the user claims to be Brad, false otherwise.
      */
-    function isBrad(isIndeedBrad) {
+    async function isBrad(isIndeedBrad) { // Made async to await AI response
         if (isIndeedBrad) {
             landingScreen.style.display = 'none'; // Hide landing screen
-            const randomIndex = Math.floor(Math.random() * bradMessages.length);
-            bradMessage.textContent = bradMessages[randomIndex]; // Set random message
             bradPopup.style.display = 'flex'; // Show Brad specific pop-up
+            bradMessage.textContent = "Generating witty comment..."; // Show loading message
+            agreeButton.style.display = 'none'; // Hide button while generating
+
+            try {
+                let chatHistory = [];
+                // Changed "Design Engineer" to "Designer" in the prompt
+                const prompt = "Generate a short, witty, and slightly teasing comment about a 'Designer' and their artistic skills, specifically mentioning crayons or felt-tips, suitable for a pop-up message in a game asset creation tool. Keep it lighthearted and humorous. Provide only one comment directly, without any introductory phrases or numbered/bulleted lists.";
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Leave as-is for Canvas to provide
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API call failed with status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const rawText = result.candidates[0].content.parts[0].text;
+                    bradMessage.textContent = extractFirstWittyComment(rawText); // Use the new function
+                } else {
+                    bradMessage.textContent = "Couldn't fetch a witty comment. Perhaps the AI is still sharpening its crayons.";
+                }
+            } catch (error) {
+                console.error("Error generating Brad message:", error);
+                bradMessage.textContent = "Error generating witty comment. Maybe Brad broke the AI with his abstract art.";
+            } finally {
+                agreeButton.style.display = 'block'; // Show button after generation (or error)
+            }
+
         } else {
             landingScreen.style.display = 'none'; // Hide landing screen
             appContainer.style.display = 'block'; // Show main app content
