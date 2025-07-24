@@ -104,7 +104,7 @@
 <!-- Brad Specific Pop-up -->
 <div id="bradPopup" class="modal-overlay" style="display: none;">
     <div class="modal-content">
-        <p class="text-lg text-gray-700">Ah, a Design Engineer! We appreciate your unique perspective, especially with crayons and felt-tips. Proceed with caution and creativity!</p>
+        <p id="bradMessage" class="text-lg text-gray-700">Ah, a Design Engineer! We appreciate your unique perspective, especially with crayons and felt-tips. Proceed with caution and creativity!</p>
         <button onclick="agreeToProceed()" class="modal-button">I agree</button>
     </div>
 </div>
@@ -212,6 +212,7 @@
     const landingScreen = document.getElementById('landingScreen');
     const appContainer = document.getElementById('app-container');
     const bradPopup = document.getElementById('bradPopup');
+    const bradMessage = document.getElementById('bradMessage');
 
 
     // Event listener for closing the custom message box
@@ -237,6 +238,14 @@
         }
     }
 
+    const bradMessages = [
+        "Ah, a Design Engineer! We appreciate your unique perspective, especially with crayons and felt-tips. Proceed with caution and creativity!",
+        "Greetings, Brad! Ready to transform your stick figures into game assets? Just remember, vector graphics are your friends!",
+        "Is that you, Brad? Hope you brought your imagination, and maybe a ruler this time. Just kidding... mostly!",
+        "Welcome, Brad! Don't worry, this tool handles all the complex stuff, so you can focus on the 'art' of it all. No actual drawing required!",
+        "Brad, is that you? Prepare to unleash your inner Picasso, but with less mess and more pixels. And fewer crayons, probably."
+    ];
+
     /**
      * Handles the user's response on the landing screen.
      * @param {boolean} isIndeedBrad True if the user claims to be Brad, false otherwise.
@@ -244,6 +253,8 @@
     function isBrad(isIndeedBrad) {
         if (isIndeedBrad) {
             landingScreen.style.display = 'none'; // Hide landing screen
+            const randomIndex = Math.floor(Math.random() * bradMessages.length);
+            bradMessage.textContent = bradMessages[randomIndex]; // Set random message
             bradPopup.style.display = 'flex'; // Show Brad specific pop-up
         } else {
             landingScreen.style.display = 'none'; // Hide landing screen
