@@ -78,27 +78,58 @@
         @apply bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 hover:bg-blue-700;
         cursor: pointer; /* Added cursor pointer for better UX */
     }
+
+    /* Landing screen specific styles */
+    #landingScreen {
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+    }
 </style>
 </head>
 <body>
 
-<div id="app-container">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Ciardle Image Cropper & Uploader</h1>
-
-    <!-- Custom Message Box -->
-    <!-- Removed 'hidden' class here, as display is now controlled directly by JS -->
-    <div id="messageBox" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <p id="messageText" class="text-lg text-gray-700">Loading...</p> <!-- Added default text -->
-            <button id="messageCloseButton" class="modal-button">OK</button>
-        </div>
+<!-- Custom Message Box -->
+<div id="messageBox" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <p id="messageText" class="text-lg text-gray-700">Loading...</p>
+        <button id="messageCloseButton" class="modal-button">OK</button>
     </div>
+</div>
+
+<!-- Brad Specific Pop-up -->
+<div id="bradPopup" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <p class="text-lg text-gray-700">Ah, a Design Engineer! We appreciate your unique perspective, especially with crayons and felt-tips. Proceed with caution and creativity!</p>
+        <button onclick="agreeToProceed()" class="modal-button">I agree</button>
+    </div>
+</div>
+
+<!-- Landing Screen -->
+<div id="landingScreen" class="flex flex-col items-center justify-center min-h-screen" style="display: flex;">
+    <h1 class="text-4xl font-bold text-gray-800 mb-8">Welcome to Ciardle Asset Creator</h1>
+    <p class="text-xl text-gray-700 mb-6">Are you Brad?</p>
+    <div class="flex space-x-4">
+        <button onclick="isBrad(true)" class="button-primary text-xl">Yes</button>
+        <button onclick="isBrad(false)" class="button-secondary text-xl">No</button>
+    </div>
+</div>
+
+<!-- Main Application Content (Initially hidden) -->
+<div id="app-container" style="display: none;">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Ciardle Image Cropper & Uploader</h1>
 
     <div class="space-y-6">
         <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
             <label for="uniqueCode" class="block text-sm font-medium text-gray-700 mb-1">Unique Code (for game asset ID):</label>
-            <!-- Removed 'readonly' attribute to make it editable -->
-            <input type="text" id="uniqueCode" value="" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none">
+            <div class="input-group">
+                <input type="text" id="uniqueCode" value="" class="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none">
+                <button onclick="copyLink()" class="button-secondary">Copy Link</button>
+            </div>
         </div>
 
         <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
@@ -110,7 +141,6 @@
         </div>
 
         <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
-            <!-- Removed max-h-96 to ensure aspect ratio is always maintained -->
             <canvas id="OriginalCanvas" class="w-full h-auto"></canvas>
         </div>
 
@@ -119,11 +149,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="CarMake" class="block text-sm font-medium text-gray-700 mb-1">Make:</label>
-                    <input type="text" id="CarMake" value="Triumph" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" id="CarMake" value="" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
                     <label for="CarModel" class="block text-sm font-medium text-gray-700 mb-1">Model:</label>
-                    <input type="text" id="CarModel" value="Spitfire" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" id="CarModel" value="" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                 </div>
             </div>
         </div>
@@ -179,6 +209,11 @@
     const loadingIndicator = document.getElementById('loadingIndicator');
     const resultText = document.getElementById("resultText");
 
+    const landingScreen = document.getElementById('landingScreen');
+    const appContainer = document.getElementById('app-container');
+    const bradPopup = document.getElementById('bradPopup');
+
+
     // Event listener for closing the custom message box
     messageCloseButton.addEventListener('click', () => {
         console.log("OK button clicked, hiding message box."); // Debugging log
@@ -201,6 +236,63 @@
             }, 3000); // Hide after 3 seconds
         }
     }
+
+    /**
+     * Handles the user's response on the landing screen.
+     * @param {boolean} isIndeedBrad True if the user claims to be Brad, false otherwise.
+     */
+    function isBrad(isIndeedBrad) {
+        if (isIndeedBrad) {
+            landingScreen.style.display = 'none'; // Hide landing screen
+            bradPopup.style.display = 'flex'; // Show Brad specific pop-up
+        } else {
+            landingScreen.style.display = 'none'; // Hide landing screen
+            appContainer.style.display = 'block'; // Show main app content
+            loadImage(); // Load image when main app is shown
+        }
+    }
+    window.isBrad = isBrad; // Make globally accessible
+
+    /**
+     * Handles the "I agree" button click on the Brad pop-up.
+     */
+    function agreeToProceed() {
+        bradPopup.style.display = 'none'; // Hide Brad specific pop-up
+        appContainer.style.display = 'block'; // Show main app content
+        loadImage(); // Load image when main app is shown
+    }
+    window.agreeToProceed = agreeToProceed; // Make globally accessible
+
+
+    /**
+     * Copies the unique code link to the clipboard.
+     */
+    function copyLink() {
+        const uniqueCode = uniqueCodeBox.value;
+        if (!uniqueCode) {
+            showMessage("No unique code to copy.");
+            return;
+        }
+        const linkToCopy = `https://nrobbert.github.io/Ciardle/ciardle.html?code=${uniqueCode}`;
+
+        // Create a temporary textarea to copy the text
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = linkToCopy;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        try {
+            document.execCommand('copy');
+            showMessage("Link copied to clipboard!", true);
+        } catch (err) {
+            console.error('Failed to copy link:', err);
+            showMessage("Failed to copy link. Please copy manually: " + linkToCopy);
+        } finally {
+            document.body.removeChild(tempTextArea);
+        }
+    }
+    // Make copyLink globally accessible
+    window.copyLink = copyLink;
+
 
     // --- Image Loading and Canvas Drawing ---
 
@@ -547,8 +639,12 @@
         const carModel = document.getElementById('CarModel').value;
 
         // Basic validation
-        if (!uniqueCode || !carMake || !carModel) {
-            showMessage("Please ensure Unique Code, Make, and Model are filled.");
+        if (!uniqueCode) {
+            showMessage("Please ensure Unique Code is filled.");
+            return;
+        }
+        if (!carMake || !carModel) { // Added validation for CarMake and CarModel
+            showMessage("Please ensure Car Make and Car Model are filled.");
             return;
         }
 
@@ -611,9 +707,6 @@
             resultText.textContent = "All images and data uploaded successfully!";
             showMessage("Upload Complete!", true); // Auto-hide this success message
 
-            // The previous code to clear cropped images was removed as per your earlier request.
-            // No changes here to keep the cropped images visible after upload.
-
         } catch (error) {
             console.error('Upload process failed:', error);
             resultText.textContent = "Upload failed. See console for details.";
@@ -626,9 +719,8 @@
     window.uploadImages = uploadImages;
 
 
-    // Initial image load on page load
-    loadImage();
-
+    // Initial image load on page load is now handled after landing screen interaction
+    // loadImage(); // This line is removed from here
 </script>
 
 </body>
