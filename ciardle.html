@@ -162,7 +162,7 @@
     border-radius: 18px;
     background-color: #f7fafc; /* Lighter background for controls */
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Ensure it takes full width within its flex container */
+    width: 100%;
   }
 
   /* Result Text */
@@ -819,15 +819,59 @@ async function getCarHint() {
     return;
   }
 
+  // Increment guess attempt for taking a hint
+  currentGuessAttempts++;
+
+  // Add current image to guessed images before checking
+  if (carImage.src && guessedImageUrls[guessedImageUrls.length - 1] !== carImage.src) {
+    guessedImageUrls.push(carImage.src);
+    displayGuessedImages();
+  }
+
+  // Add hint entry to the answer table
+  addAnswerRow('Hint Taken 💡', 'Hint Taken 💡'); // Display hint taken in both columns
+
+  // Add hint to shareable results history
+  shareableResultsHistory.push(`Attempt ${currentGuessAttempts -1}: Hint Taken 💡`); // Use currentGuessAttempts - 1 for the actual attempt number for the hint
+  updateShareableResults();
+
+  // Check if game ends after taking a hint
+  if (currentGuessAttempts > maxGuessAttempts) {
+    resultText.textContent = `Out of guesses due to hints! The answer was ${CarMake} ${CarModel}.`;
+    carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
+    endGame(); // End the game
+    return; // Stop further execution if game ends
+  }
+
   hintText.textContent = "Generating hint... please wait.";
   getHintButton.disabled = true; // Disable button while generating
 
+  // Load the next cropped image based on attempts after taking a hint
+  if (currentGuessAttempts <= maxGuessAttempts) {
+    carImage.src = ImageURLStart + currentGuessAttempts + ImageURLEnd;
+  }
+
+
   let chatHistory = [];
-  const prompt = `The car is a ${CarMake} ${CarModel}. Provide a subtle hint about the car's make or model without explicitly stating either. Make it concise and helpful for a guessing game. For example, if it's a Ford Mustang, you could say "This car is often associated with American muscle." or "Its logo features an animal known for speed."`;
+  let prompt = "";
+
+  // Randomly choose hint format
+  const hintType = Math.random();
+  if (hintType < 0.3) { // 30% chance for Haiku
+    prompt = `The car is a ${CarMake} ${CarModel}. Provide a cryptic hint about the car's make or model in the form of a haiku (5-7-5 syllables). Do not explicitly state the make or model.`;
+  } else if (hintType < 0.6) { // 30% chance for Limerick
+    prompt = `The car is a ${CarMake} ${CarModel}. Provide a cryptic hint about the car's make or model in the form of a limerick. Do not explicitly state the make or model. Make it humorous if possible.`;
+  } else { // 40% chance for a standard cryptic hint
+    prompt = `The car is a ${CarMake} ${CarModel}. Provide a very cryptic, subtle, less obvious, and riddling hint about the car's make or model without explicitly stating either. Make it concise and helpful for a guessing game. For example, if it's a Ford Mustang, you could say "This car is often associated with American muscle." or "Its logo features an animal known for speed."`;
+  }
+
   chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
   const payload = { contents: chatHistory };
-  const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Your Gemini API Key
+  // IMPORTANT: For deployment outside of this Canvas environment (e.g., GitHub Pages),
+  // you MUST provide your actual Gemini API key here.
+  // Get your API key from: https://aistudio.google.com/app/apikey
+  const apiKey = ""; // PASTE YOUR GEMINI API KEY HERE
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   try {
