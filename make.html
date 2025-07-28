@@ -132,11 +132,22 @@
             </div>
         </div>
 
+        <!-- NEW: Updated Image Loading Section -->
         <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
-            <label for="imageURL" class="block text-sm font-medium text-gray-700 mb-1">Image URL:</label>
-            <div class="input-group">
-                <input type="text" id="imageURL" value="https://upload.wikimedia.org/wikipedia/commons/5/55/JDV584V_1980_Triumph_Spitfire_1500.jpg" size="50" class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                <button onclick="loadImage()" class="button-primary">Load Image</button>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Load Source Image</label>
+            <div class="space-y-2">
+                <div class="input-group">
+                    <input type="text" id="imageURL" value="https://upload.wikimedia.org/wikipedia/commons/5/55/JDV584V_1980_Triumph_Spitfire_1500.jpg" size="50" class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter image URL">
+                    <button onclick="loadImageFromUrl()" class="button-primary">Load from URL</button>
+                </div>
+                <div class="text-center">
+                    <span class="text-sm text-gray-500">OR</span>
+                </div>
+                <div>
+                    <!-- This input is hidden and triggered by the button below -->
+                    <input type="file" id="imageUpload" accept="image/*" class="hidden">
+                    <button onclick="document.getElementById('imageUpload').click()" class="button-secondary w-full">Upload from Computer</button>
+                </div>
             </div>
         </div>
 
@@ -215,6 +226,9 @@
     const bradMessage = document.getElementById('bradMessage');
     const agreeButton = document.getElementById('agreeButton');
 
+    // NEW: Reference to the file upload input
+    const imageUploadInput = document.getElementById('imageUpload');
+
 
     // Event listener for closing the custom message box
     messageCloseButton.addEventListener('click', () => {
@@ -292,7 +306,7 @@
                 // IMPORTANT: For deployment outside of this Canvas environment (e.g., GitHub Pages),
                 // you MUST provide your actual Gemini API key here.
                 // Get your API key from: https://aistudio.google.com/app/apikey
-                const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Your Gemini API Key
+                const apiKey = ""; // Your Gemini API Key - LEAVE BLANK IN CANVAS
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
@@ -324,7 +338,7 @@
         } else {
             landingScreen.style.display = 'none'; // Hide landing screen
             appContainer.style.display = 'block'; // Show main app content
-            loadImage(); // Load image when main app is shown
+            loadImageFromUrl(); // Load default image when main app is shown
         }
     }
     window.isBrad = isBrad; // Make globally accessible
@@ -335,7 +349,7 @@
     function agreeToProceed() {
         bradPopup.style.display = 'none'; // Hide Brad specific pop-up
         appContainer.style.display = 'block'; // Show main app content
-        loadImage(); // Load image when main app is shown
+        loadImageFromUrl(); // Load default image when main app is shown
     }
     window.agreeToProceed = agreeToProceed; // Make globally accessible
 
@@ -382,7 +396,7 @@
 
     carImage.onerror = function() {
         // This is the specific change to auto-hide the error message on load
-        showMessage("Failed to load image from URL. Please check the URL.", true); // Auto-hide this message
+        showMessage("Failed to load image. Please check the URL or file.", true); // Auto-hide this message
         resultText.textContent = "Image load failed.";
         // Clear canvas if image fails to load
         ctx.clearRect(0, 0, OriginalCanvas.width, OriginalCanvas.height);
@@ -393,17 +407,34 @@
     /**
      * Loads an image from the provided URL into the canvas.
      */
-    function loadImage() {
+    function loadImageFromUrl() {
         const url = document.getElementById('imageURL').value;
         if (!url) {
             showMessage("Please enter an image URL.");
             return;
         }
         resultText.textContent = "Loading image...";
+        // Clear the file input value if a URL is being loaded
+        imageUploadInput.value = '';
         carImage.src = url;
     }
-    // Make loadImage globally accessible
-    window.loadImage = loadImage;
+    // Make loadImageFromUrl globally accessible
+    window.loadImageFromUrl = loadImageFromUrl;
+
+    // NEW: Event listener for the file input
+    imageUploadInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                resultText.textContent = "Loading image...";
+                // Clear the URL input value if a file is being loaded
+                document.getElementById('imageURL').value = '';
+                carImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
 
     // --- Canvas Drawing and Cropping Selection ---
@@ -794,9 +825,6 @@
     // Make uploadImages globally accessible
     window.uploadImages = uploadImages;
 
-
-    // Initial image load on page load is now handled after landing screen interaction
-    // loadImage(); // This line is removed from here
 </script>
 
 </body>
