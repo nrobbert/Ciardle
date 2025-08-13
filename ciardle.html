@@ -14,7 +14,7 @@
     text-align: center;
     background: linear-gradient(to bottom right, #e0f2f7, #c1e4ee); /* Soft blue gradient background */
     color: #2d3748; /* Darker text for better contrast */
-    padding: 20px; /* Increased overall padding */
+    padding: clamp(10px, 3vw, 20px); /* Fluid padding using clamp */
     line-height: 1.6;
     display: flex;
     flex-direction: column;
@@ -27,24 +27,26 @@
   h1, h2 {
     color: #2a4365; /* Darker blue for headings */
     font-weight: 800; /* Extra bold headings */
-    margin-bottom: 1.5rem; /* Increased margin-bottom */
+    margin-bottom: clamp(1rem, 4vw, 1.5rem); /* Fluid margin */
     letter-spacing: -0.02em; /* Slightly tighter letter spacing */
   }
 
   h1 {
-    font-size: 3.5rem; /* Larger main title */
+    font-size: clamp(2.5rem, 8vw, 3.5rem); /* Fluid typography */
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1); /* Subtle text shadow */
   }
 
   h2 {
-    font-size: 2.2rem; /* Larger section titles */
-    margin-top: 2.5rem; /* More space above sections */
+    font-size: clamp(1.5rem, 5vw, 2.2rem); /* Fluid typography */
+    margin-top: clamp(1.5rem, 5vw, 2.5rem); /* Fluid margin */
   }
 
   /* Buttons */
   button {
-    font-size: 1.1rem; /* Slightly larger font for buttons */
-    padding: 14px 28px; /* More generous padding */
+    font-size: clamp(1rem, 3vw, 1.1rem); /* Fluid typography */
+    padding: clamp(12px, 3vw, 14px) clamp(20px, 5vw, 28px); /* Fluid padding */
+    min-height: 44px; /* Minimum touch target size */
+    min-width: 44px; /* Minimum touch target size */
     border-radius: 12px; /* More rounded corners */
     border: none;
     cursor: pointer;
@@ -92,14 +94,16 @@
 
   /* Input Fields */
   input[type="text"] {
-    font-size: 1.1rem; /* Slightly larger font for inputs */
-    padding: 12px 15px; /* More padding */
-    margin: 8px; /* More margin */
+    font-size: clamp(1rem, 3vw, 1.1rem); /* Fluid typography */
+    padding: clamp(12px, 3vw, 15px); /* Fluid padding */
+    margin: clamp(6px, 2vw, 8px); /* Fluid margin */
+    min-height: 44px; /* Minimum touch target height */
     border: 1px solid #cbd5e0; /* Lighter border */
     border-radius: 10px; /* More rounded corners */
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08); /* More pronounced inner shadow */
     transition: all 0.3s ease-in-out;
-    max-width: 250px; /* Increased max width for inputs */
+    width: 100%; /* Full width by default */
+    max-width: clamp(200px, 40vw, 250px); /* Fluid max width */
     background-color: #ffffff;
     color: #2d3748;
   }
@@ -113,12 +117,12 @@
   /* Card-like Sections */
   .card-section {
     background-color: #ffffff;
-    padding: 30px; /* More padding */
+    padding: clamp(20px, 5vw, 30px); /* Fluid padding */
     border-radius: 18px; /* More rounded corners for cards */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger, softer shadow */
-    margin-bottom: 30px; /* More space between sections */
+    margin-bottom: clamp(20px, 5vw, 30px); /* Fluid margin */
     width: 100%;
-    max-width: 700px; /* Adjusted max width for better flow */
+    max-width: clamp(300px, 90vw, 700px); /* Better responsive max width */
     border: 1px solid #e2e8f0; /* Subtle border */
   }
 
@@ -127,16 +131,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px; /* Increased gap */
+    gap: clamp(20px, 5vw, 30px); /* Fluid gap */
     width: 100%;
-    max-width: 1100px; /* Wider layout for main game */
-    margin-bottom: 30px;
+    max-width: clamp(300px, 95vw, 1100px); /* Better responsive max width */
+    margin-bottom: clamp(20px, 5vw, 30px); /* Fluid margin */
   }
 
   /* Main Car Image */
   #carImage {
     width: 100%; /* Allow it to take full width of its flex container */
-    min-height: 500px; /* IMPORTANT: Minimum height */
+    max-width: 100%; /* Ensure it doesn't overflow */
+    min-height: clamp(300px, 50vw, 500px); /* Fluid minimum height */
     object-fit: contain; /* IMPORTANT: Make it contain the image, no cropping */
     border: 3px solid #4a5568;
     border-radius: 18px;
@@ -158,7 +163,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 25px; /* Added padding to this section */
+    padding: clamp(20px, 4vw, 25px); /* Fluid padding */
     border-radius: 18px;
     background-color: #f7fafc; /* Lighter background for controls */
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
@@ -167,30 +172,30 @@
 
   /* Result Text */
   #resultText {
-    font-size: 1.4rem; /* Larger result text */
+    font-size: clamp(1.2rem, 4vw, 1.4rem); /* Fluid typography */
     font-weight: 600;
-    margin-bottom: 1.5rem; /* More space below */
+    margin-bottom: clamp(1rem, 3vw, 1.5rem); /* Fluid margin */
     color: #4a5568;
   }
 
   /* Guess Input Container */
   #guessInputContainer {
-    display: flex; /* Default to flex for alignment */
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    display: flex;
+    flex-direction: column; /* Stack vertically on mobile */
     justify-content: center; /* Center inputs */
-    gap: 15px; /* Space between inputs */
+    gap: clamp(10px, 3vw, 15px); /* Fluid gap */
     width: 100%;
-    margin-bottom: 20px; /* Space below inputs */
+    margin-bottom: clamp(15px, 4vw, 20px); /* Fluid margin */
   }
 
   /* Hint Section */
   #hintContainer {
-    margin-top: 20px; /* More space above hint */
-    padding: 18px; /* More padding */
+    margin-top: clamp(15px, 4vw, 20px); /* Fluid margin */
+    padding: clamp(15px, 4vw, 18px); /* Fluid padding */
     background-color: #fff8e1; /* Softer yellow for hint */
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    max-width: 600px;
+    max-width: clamp(300px, 90vw, 600px); /* Fluid max width */
     width: 100%;
     border: 1px solid #ffe082; /* Subtle border */
     display: block; /* Ensure it's block by default */
@@ -199,15 +204,15 @@
   #hintText {
     font-style: italic;
     color: #a07f00; /* Darker yellow for hint text */
-    margin-top: 10px; /* More space */
+    margin-top: clamp(8px, 2vw, 10px); /* Fluid margin */
     min-height: 25px; /* Ensure space even when empty */
-    font-size: 1.05rem; /* Slightly larger hint text */
+    font-size: clamp(1rem, 3vw, 1.05rem); /* Fluid typography */
   }
 
   /* Table Styling */
   #answerTable {
     width: 100%;
-    max-width: 700px; /* Wider table */
+    max-width: clamp(300px, 90vw, 700px); /* Fluid max width */
     margin: 0 auto; /* Removed top/bottom margin, handled by parent container */
     border-collapse: separate;
     border-spacing: 0;
@@ -220,9 +225,9 @@
 
   #answerTable th, #answerTable td {
     border: none;
-    padding: 15px; /* More padding */
+    padding: clamp(12px, 3vw, 15px); /* Fluid padding */
     text-align: center;
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 3vw, 1.1rem); /* Fluid typography */
   }
 
   #answerTable th {
@@ -258,23 +263,24 @@
 
   /* Guessed Images Container */
   #guessedImagesContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px; /* More gap */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid */
+    gap: clamp(15px, 4vw, 20px); /* Fluid gap */
     margin: 0 auto; /* Removed top/bottom margin, handled by parent container */
-    padding: 25px; /* More padding */
+    padding: clamp(20px, 4vw, 25px); /* Fluid padding */
     background-color: #ffffff;
     border-radius: 18px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    max-width: 900px; /* Wider container */
+    max-width: clamp(300px, 90vw, 900px); /* Fluid max width */
     width: 100%;
     border: 1px solid #e2e8f0;
   }
 
   .guessed-image-item {
-    width: 150px; /* Larger guessed images */
-    height: 150px;
+    width: 100%; /* Full width of grid item */
+    height: auto;
+    aspect-ratio: 1; /* Maintain square aspect ratio */
+    min-height: 100px; /* Minimum size for touch targets */
     object-fit: cover;
     border: 2px solid #a0aec0; /* Thicker border */
     border-radius: 12px;
@@ -291,12 +297,12 @@
 
   /* Shareable Results Container */
   #shareableResultsContainer {
-    margin-top: 30px; /* More margin */
-    padding: 25px; /* More padding */
+    margin-top: clamp(20px, 5vw, 30px); /* Fluid margin */
+    padding: clamp(20px, 4vw, 25px); /* Fluid padding */
     background-color: #f0f4f8; /* Lighter background */
     border-radius: 18px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    max-width: 700px; /* Wider container */
+    max-width: clamp(300px, 90vw, 700px); /* Fluid max width */
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -310,14 +316,14 @@
 
   #shareableResultsTextarea {
     width: 100%;
-    height: 150px; /* Taller textarea */
-    padding: 15px; /* More padding */
+    height: clamp(120px, 20vw, 150px); /* Fluid height */
+    padding: clamp(12px, 3vw, 15px); /* Fluid padding */
     border: 1px solid #cbd5e0;
     border-radius: 10px;
     font-family: 'Roboto Mono', monospace;
-    font-size: 1.05rem; /* Slightly larger font */
+    font-size: clamp(0.9rem, 2.5vw, 1.05rem); /* Fluid typography */
     resize: vertical;
-    margin-bottom: 15px; /* More margin */
+    margin-bottom: clamp(12px, 3vw, 15px); /* Fluid margin */
     background-color: #ffffff;
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
   }
@@ -367,16 +373,17 @@
   #historyAndVisualsContainer {
     display: flex;
     flex-direction: column; /* Default to column on small screens */
-    gap: 30px; /* Space between sections */
+    gap: clamp(20px, 5vw, 30px); /* Fluid gap */
     width: 100%;
-    max-width: 1100px; /* Match main game area max-width */
-    margin-bottom: 30px;
+    max-width: clamp(300px, 95vw, 1100px); /* Fluid max width */
+    margin-bottom: clamp(20px, 5vw, 30px); /* Fluid margin */
   }
 
   #historyAndVisualsContainer .card-section {
     margin-bottom: 0; /* Remove individual card-section bottom margin */
   }
 
+  /* Responsive Layout Improvements */
   @media (min-width: 768px) {
     #mainGameArea {
       flex-direction: row; /* Row layout on medium screens and up */
@@ -386,21 +393,22 @@
 
     #carImage {
       width: 50%; /* Take up 50% of the main game area */
-      /* Removed max-width: 550px; to allow it to grow more */
+      max-width: 550px; /* Limit maximum width */
     }
 
     .game-controls-and-results {
-      padding: 30px;
+      padding: clamp(25px, 3vw, 30px);
       max-width: 550px; /* Limit width of controls column */
     }
 
-    input[type="text"] {
-      width: 48%; /* Adjust width for two inputs side by side within flex */
-      margin: 0 8px; /* Adjust margins */
+    #guessInputContainer {
+      flex-direction: row; /* Side-by-side on larger screens */
+      gap: clamp(15px, 2vw, 20px);
     }
 
-    #guessInputContainer {
-      flex-wrap: nowrap; /* Prevent wrapping on larger screens */
+    input[type="text"] {
+      width: calc(50% - 10px); /* Two inputs side by side with gap */
+      margin: 0; /* Reset margin for larger screens */
     }
 
     /* Side-by-side for history and visuals */
@@ -415,6 +423,7 @@
       margin-left: 15px; /* Half of gap for left item */
       margin-right: 15px; /* Half of gap for right item */
     }
+    
     /* Adjust margins for the first and last child to remove extra space */
     #historyAndVisualsContainer > .card-section:first-child {
         margin-left: 0;
@@ -424,31 +433,14 @@
     }
   }
 
-  @media (max-width: 480px) {
-    h1 {
-      font-size: 2.5rem;
+  /* Large screen optimizations */
+  @media (min-width: 1200px) {
+    body {
+      padding: 30px;
     }
-    h2 {
-      font-size: 1.8rem;
-    }
-    button {
-      font-size: 0.95rem;
-      padding: 12px 20px;
-    }
-    input[type="text"] {
-      font-size: 0.95rem;
-      padding: 10px;
-      max-width: 100%; /* Allow inputs to take full width on small screens */
-    }
-    #carImage {
-      min-height: 350px; /* Smaller min-height on very small screens */
-    }
-    .guessed-image-item {
-      width: 100px;
-      height: 100px;
-    }
-    #largeGuessedImage {
-      height: 400px; /* Smaller enlarged image height on very small screens */
+    
+    .card-section {
+      padding: 40px;
     }
   }
 </style>
