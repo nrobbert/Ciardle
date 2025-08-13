@@ -226,6 +226,172 @@
         z-index: 1000;
         padding: clamp(1rem, 4vw, 2rem); /* Ensure modal doesn't touch edges */
     }
+
+    /* Fullscreen crop modal */
+    .crop-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: none;
+        z-index: 2000;
+        touch-action: none; /* Prevent default touch behaviors */
+    }
+
+    .crop-modal-overlay.active {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .crop-modal-header {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .crop-modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .crop-modal-instructions {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .crop-modal-content {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .crop-image-container {
+        position: relative;
+        max-width: 100%;
+        max-height: 100%;
+        touch-action: none;
+    }
+
+    .crop-source-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: block;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .crop-selection-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .crop-selection-box {
+        position: absolute;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+        cursor: move;
+        pointer-events: all;
+        min-width: 50px;
+        min-height: 50px;
+    }
+
+    .crop-handle {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background-color: #fff;
+        border: 2px solid var(--primary-color);
+        border-radius: 50%;
+        cursor: pointer;
+        pointer-events: all;
+        touch-action: none;
+    }
+
+    .crop-handle.nw { top: -10px; left: -10px; cursor: nw-resize; }
+    .crop-handle.ne { top: -10px; right: -10px; cursor: ne-resize; }
+    .crop-handle.sw { bottom: -10px; left: -10px; cursor: sw-resize; }
+    .crop-handle.se { bottom: -10px; right: -10px; cursor: se-resize; }
+
+    .crop-modal-footer {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 1rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .crop-btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        min-width: 100px;
+        touch-action: manipulation;
+    }
+
+    .crop-btn-cancel {
+        background-color: var(--secondary-color);
+        color: var(--text-primary);
+    }
+
+    .crop-btn-cancel:hover {
+        background-color: var(--secondary-hover);
+    }
+
+    .crop-btn-ok {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .crop-btn-ok:hover {
+        background-color: var(--primary-hover);
+    }
+
+    /* Mobile-specific adjustments */
+    @media (max-width: 768px) {
+        .crop-handle {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .crop-handle.nw { top: -15px; left: -15px; }
+        .crop-handle.ne { top: -15px; right: -15px; }
+        .crop-handle.sw { bottom: -15px; left: -15px; }
+        .crop-handle.se { bottom: -15px; right: -15px; }
+
+        .crop-modal-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+
+        .crop-modal-footer {
+            flex-direction: column;
+        }
+        
+        .crop-btn {
+            width: 100%;
+        }
+    }
     
     .modal-content {
         background-color: white;
@@ -815,6 +981,319 @@
     // Make cropImage globally accessible
     window.cropImage = cropImage;
 
+    // --- Touch-Friendly Crop Modal Functions ---
+
+    let currentCropImageNumber = 1;
+    let cropSelection = { x: 0, y: 0, width: 200, height: 150 };
+    let isDragging = false;
+    let isResizing = false;
+    let dragStartPos = { x: 0, y: 0 };
+    let resizeHandle = null;
+    let imageContainer = null;
+    let sourceImageElement = null;
+
+    /**
+     * Opens the fullscreen crop modal for the specified image number
+     */
+    function openCropModal(imageNumber) {
+        if (!carImage.src || carImage.naturalWidth === 0) {
+            showMessage("Please load an image first.");
+            return;
+        }
+
+        currentCropImageNumber = imageNumber;
+        
+        // Update modal title
+        document.getElementById('cropImageNumber').textContent = imageNumber;
+        
+        // Set the source image
+        const cropSourceImage = document.getElementById('cropSourceImage');
+        cropSourceImage.src = carImage.src;
+        
+        // Show the modal
+        const modal = document.getElementById('cropModal');
+        modal.classList.add('active');
+        
+        // Initialize crop selection after image loads
+        cropSourceImage.onload = function() {
+            initializeCropSelection();
+        };
+        
+        // If image is already loaded, initialize immediately
+        if (cropSourceImage.complete) {
+            initializeCropSelection();
+        }
+    }
+
+    /**
+     * Initializes the crop selection box with default position and size
+     */
+    function initializeCropSelection() {
+        imageContainer = document.getElementById('cropImageContainer');
+        sourceImageElement = document.getElementById('cropSourceImage');
+        
+        if (!imageContainer || !sourceImageElement) return;
+        
+        const containerRect = imageContainer.getBoundingClientRect();
+        const imageRect = sourceImageElement.getBoundingClientRect();
+        
+        // Calculate the actual image dimensions within the container
+        const imageWidth = imageRect.width;
+        const imageHeight = imageRect.height;
+        
+        // Set initial selection to center 40% of the image
+        const selectionWidth = Math.min(200, imageWidth * 0.4);
+        const selectionHeight = Math.min(150, imageHeight * 0.4);
+        
+        cropSelection = {
+            x: (imageWidth - selectionWidth) / 2,
+            y: (imageHeight - selectionHeight) / 2,
+            width: selectionWidth,
+            height: selectionHeight
+        };
+        
+        updateCropSelectionDisplay();
+        setupCropEventListeners();
+    }
+
+    /**
+     * Updates the visual display of the crop selection box
+     */
+    function updateCropSelectionDisplay() {
+        const selectionBox = document.getElementById('cropSelectionBox');
+        if (!selectionBox) return;
+        
+        selectionBox.style.left = cropSelection.x + 'px';
+        selectionBox.style.top = cropSelection.y + 'px';
+        selectionBox.style.width = cropSelection.width + 'px';
+        selectionBox.style.height = cropSelection.height + 'px';
+    }
+
+    /**
+     * Sets up event listeners for crop interaction (both mouse and touch)
+     */
+    function setupCropEventListeners() {
+        const selectionBox = document.getElementById('cropSelectionBox');
+        const handles = document.querySelectorAll('.crop-handle');
+        
+        if (!selectionBox) return;
+        
+        // Selection box drag events
+        selectionBox.addEventListener('mousedown', startDragSelection);
+        selectionBox.addEventListener('touchstart', startDragSelection, { passive: false });
+        
+        // Handle resize events
+        handles.forEach(handle => {
+            handle.addEventListener('mousedown', (e) => startResizeSelection(e, handle.dataset.handle));
+            handle.addEventListener('touchstart', (e) => startResizeSelection(e, handle.dataset.handle), { passive: false });
+        });
+        
+        // Global move and end events
+        document.addEventListener('mousemove', handleCropInteraction);
+        document.addEventListener('touchmove', handleCropInteraction, { passive: false });
+        document.addEventListener('mouseup', endCropInteraction);
+        document.addEventListener('touchend', endCropInteraction);
+        document.addEventListener('touchcancel', endCropInteraction);
+    }
+
+    /**
+     * Starts dragging the selection box
+     */
+    function startDragSelection(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const imageRect = sourceImageElement.getBoundingClientRect();
+        
+        isDragging = true;
+        dragStartPos = {
+            x: clientX - imageRect.left - cropSelection.x,
+            y: clientY - imageRect.top - cropSelection.y
+        };
+    }
+
+    /**
+     * Starts resizing the selection box
+     */
+    function startResizeSelection(e, handle) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const imageRect = sourceImageElement.getBoundingClientRect();
+        
+        isResizing = true;
+        resizeHandle = handle;
+        dragStartPos = {
+            x: clientX - imageRect.left,
+            y: clientY - imageRect.top
+        };
+    }
+
+    /**
+     * Handles crop interaction (drag/resize)
+     */
+    function handleCropInteraction(e) {
+        if (!isDragging && !isResizing) return;
+        
+        e.preventDefault();
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const imageRect = sourceImageElement.getBoundingClientRect();
+        const mouseX = clientX - imageRect.left;
+        const mouseY = clientY - imageRect.top;
+        
+        if (isDragging) {
+            // Move the selection box
+            const newX = Math.max(0, Math.min(mouseX - dragStartPos.x, imageRect.width - cropSelection.width));
+            const newY = Math.max(0, Math.min(mouseY - dragStartPos.y, imageRect.height - cropSelection.height));
+            
+            cropSelection.x = newX;
+            cropSelection.y = newY;
+        } else if (isResizing && resizeHandle) {
+            // Resize the selection box
+            const deltaX = mouseX - dragStartPos.x;
+            const deltaY = mouseY - dragStartPos.y;
+            
+            const newSelection = { ...cropSelection };
+            
+            switch (resizeHandle) {
+                case 'nw':
+                    newSelection.x = Math.max(0, Math.min(cropSelection.x + deltaX, cropSelection.x + cropSelection.width - 50));
+                    newSelection.y = Math.max(0, Math.min(cropSelection.y + deltaY, cropSelection.y + cropSelection.height - 50));
+                    newSelection.width = cropSelection.width - (newSelection.x - cropSelection.x);
+                    newSelection.height = cropSelection.height - (newSelection.y - cropSelection.y);
+                    break;
+                case 'ne':
+                    newSelection.y = Math.max(0, Math.min(cropSelection.y + deltaY, cropSelection.y + cropSelection.height - 50));
+                    newSelection.width = Math.max(50, Math.min(mouseX - cropSelection.x, imageRect.width - cropSelection.x));
+                    newSelection.height = cropSelection.height - (newSelection.y - cropSelection.y);
+                    break;
+                case 'sw':
+                    newSelection.x = Math.max(0, Math.min(cropSelection.x + deltaX, cropSelection.x + cropSelection.width - 50));
+                    newSelection.width = cropSelection.width - (newSelection.x - cropSelection.x);
+                    newSelection.height = Math.max(50, Math.min(mouseY - cropSelection.y, imageRect.height - cropSelection.y));
+                    break;
+                case 'se':
+                    newSelection.width = Math.max(50, Math.min(mouseX - cropSelection.x, imageRect.width - cropSelection.x));
+                    newSelection.height = Math.max(50, Math.min(mouseY - cropSelection.y, imageRect.height - cropSelection.y));
+                    break;
+            }
+            
+            // Apply constraints to keep selection within image bounds
+            if (newSelection.x + newSelection.width <= imageRect.width && 
+                newSelection.y + newSelection.height <= imageRect.height &&
+                newSelection.width >= 50 && newSelection.height >= 50) {
+                cropSelection = newSelection;
+            }
+            
+            dragStartPos = { x: mouseX, y: mouseY };
+        }
+        
+        updateCropSelectionDisplay();
+    }
+
+    /**
+     * Ends crop interaction
+     */
+    function endCropInteraction(e) {
+        isDragging = false;
+        isResizing = false;
+        resizeHandle = null;
+    }
+
+    /**
+     * Closes the crop modal
+     */
+    function closeCropModal() {
+        const modal = document.getElementById('cropModal');
+        modal.classList.remove('active');
+        
+        // Clean up event listeners
+        document.removeEventListener('mousemove', handleCropInteraction);
+        document.removeEventListener('touchmove', handleCropInteraction);
+        document.removeEventListener('mouseup', endCropInteraction);
+        document.removeEventListener('touchend', endCropInteraction);
+        document.removeEventListener('touchcancel', endCropInteraction);
+    }
+
+    /**
+     * Applies the crop and creates the cropped image
+     */
+    function applyCrop() {
+        if (!sourceImageElement || !carImage.src) {
+            showMessage("No image to crop.");
+            return;
+        }
+        
+        // Calculate scale factors from displayed image size to actual image size
+        const imageRect = sourceImageElement.getBoundingClientRect();
+        const scaleX = carImage.naturalWidth / imageRect.width;
+        const scaleY = carImage.naturalHeight / imageRect.height;
+        
+        // Get actual coordinates and dimensions on the original image
+        const actualX = cropSelection.x * scaleX;
+        const actualY = cropSelection.y * scaleY;
+        const actualWidth = cropSelection.width * scaleX;
+        const actualHeight = cropSelection.height * scaleY;
+        
+        // Create a temporary canvas for cropping
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = actualWidth;
+        croppedCanvas.height = actualHeight;
+        const croppedCtx = croppedCanvas.getContext('2d');
+        
+        // Draw the cropped portion of the original image onto the temporary canvas
+        croppedCtx.drawImage(carImage, actualX, actualY, actualWidth, actualHeight, 0, 0, actualWidth, actualHeight);
+        
+        // Get the target image element
+        const CroppedImage = document.getElementById('Image' + currentCropImageNumber);
+        if (CroppedImage) {
+            // Convert the cropped canvas to a Blob and then to an Object URL for display
+            croppedCanvas.toBlob((blob) => {
+                if (blob) {
+                    const imageUrl = URL.createObjectURL(blob);
+                    CroppedImage.src = imageUrl;
+                    resultText.textContent = `Image ${currentCropImageNumber} cropped successfully.`;
+                    
+                    // Close the modal
+                    closeCropModal();
+                    
+                    // Auto-advance to next image if not the last one
+                    if (currentCropImageNumber < 5) {
+                        setTimeout(() => {
+                            openCropModal(currentCropImageNumber + 1);
+                        }, 500);
+                    }
+                } else {
+                    showMessage("Failed to create cropped image blob.");
+                }
+            }, 'image/png');
+        } else {
+            console.error(`Image element with ID 'Image${currentCropImageNumber}' not found.`);
+        }
+    }
+
+    // Make functions globally accessible
+    window.openCropModal = openCropModal;
+    window.closeCropModal = closeCropModal;
+    window.applyCrop = applyCrop;
+
+    // Override the original cropImage function to use the new modal
+    function cropImageWithModal(imgNum) {
+        openCropModal(imgNum);
+    }
+    
+    // Replace the global cropImage function
+    window.cropImage = cropImageWithModal;
+
 
     // --- Cloudinary Upload Functions ---
 
@@ -1083,6 +1562,33 @@
     window.uploadImages = uploadImages;
 
 </script>
+
+<!-- Fullscreen Crop Modal -->
+<div id="cropModal" class="crop-modal-overlay">
+    <div class="crop-modal-header">
+        <div>
+            <h3 class="crop-modal-title">Crop Image <span id="cropImageNumber">1</span></h3>
+            <p class="crop-modal-instructions">Drag the selection box and resize using the corner handles</p>
+        </div>
+    </div>
+    <div class="crop-modal-content">
+        <div class="crop-image-container" id="cropImageContainer">
+            <img id="cropSourceImage" class="crop-source-image" src="" alt="Source image for cropping">
+            <div class="crop-selection-overlay" id="cropSelectionOverlay">
+                <div class="crop-selection-box" id="cropSelectionBox">
+                    <div class="crop-handle nw" data-handle="nw"></div>
+                    <div class="crop-handle ne" data-handle="ne"></div>
+                    <div class="crop-handle sw" data-handle="sw"></div>
+                    <div class="crop-handle se" data-handle="se"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="crop-modal-footer">
+        <button type="button" class="crop-btn crop-btn-cancel" onclick="closeCropModal()">Cancel</button>
+        <button type="button" class="crop-btn crop-btn-ok" onclick="applyCrop()">Crop Image</button>
+    </div>
+</div>
 
 </body>
 </html>
