@@ -120,13 +120,19 @@
     /* Responsive grid for thumbnails */
     #croppedImages {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        grid-template-columns: 1fr; /* Single column on mobile */
         gap: clamp(0.75rem, 3vw, 1rem);
+    }
+    
+    @media (min-width: 480px) {
+        #croppedImages {
+            grid-template-columns: repeat(2, 1fr); /* Two columns on small tablets */
+        }
     }
     
     @media (min-width: 640px) {
         #croppedImages {
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(5, 1fr); /* Five columns on desktop */
         }
     }
     
@@ -150,13 +156,19 @@
     /* Button grid responsive layout */
     #makeImage {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        grid-template-columns: 1fr; /* Single column on mobile */
         gap: clamp(0.5rem, 2vw, 1rem);
+    }
+    
+    @media (min-width: 480px) {
+        #makeImage {
+            grid-template-columns: repeat(2, 1fr); /* Two columns on small tablets */
+        }
     }
     
     @media (min-width: 640px) {
         #makeImage {
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(5, 1fr); /* Five columns on desktop */
         }
     }
     
