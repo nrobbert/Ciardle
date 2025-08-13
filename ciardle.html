@@ -8,45 +8,45 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Mono&display=swap');
 
+
   /* Base Styles for the Body */
   body {
     font-family: 'Inter', sans-serif;
     text-align: center;
     background: linear-gradient(to bottom right, #e0f2f7, #c1e4ee); /* Soft blue gradient background */
     color: #2d3748; /* Darker text for better contrast */
-    padding: clamp(10px, 3vw, 20px); /* Fluid padding using clamp */
+    padding: 20px; /* Increased overall padding */
     line-height: 1.6;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
     overflow-x: hidden; /* Prevent horizontal scroll */
+    position: relative; /* Added for positioning context */
   }
 
   /* Headings */
   h1, h2 {
     color: #2a4365; /* Darker blue for headings */
     font-weight: 800; /* Extra bold headings */
-    margin-bottom: clamp(1rem, 4vw, 1.5rem); /* Fluid margin */
+    margin-bottom: 1.5rem; /* Increased margin-bottom */
     letter-spacing: -0.02em; /* Slightly tighter letter spacing */
   }
 
   h1 {
-    font-size: clamp(2.5rem, 8vw, 3.5rem); /* Fluid typography */
+    font-size: 3.5rem; /* Larger main title */
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1); /* Subtle text shadow */
   }
 
   h2 {
-    font-size: clamp(1.5rem, 5vw, 2.2rem); /* Fluid typography */
-    margin-top: clamp(1.5rem, 5vw, 2.5rem); /* Fluid margin */
+    font-size: 2.2rem; /* Larger section titles */
+    margin-top: 2.5rem; /* More space above sections */
   }
 
   /* Buttons */
-  button {
-    font-size: clamp(1rem, 3vw, 1.1rem); /* Fluid typography */
-    padding: clamp(12px, 3vw, 14px) clamp(20px, 5vw, 28px); /* Fluid padding */
-    min-height: 44px; /* Minimum touch target size */
-    min-width: 44px; /* Minimum touch target size */
+  button, .button-link {
+    font-size: 1.1rem; /* Slightly larger font for buttons */
+    padding: 14px 28px; /* More generous padding */
     border-radius: 12px; /* More rounded corners */
     border: none;
     cursor: pointer;
@@ -55,9 +55,12 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* More prominent shadow */
     color: white;
     background-size: 200% auto; /* For gradient animation */
+    text-decoration: none; /* For <a> tags styled as buttons */
+    display: inline-block; /* For <a> tags */
+
   }
 
-  button:hover {
+  button:hover, .button-link:hover {
     transform: translateY(-3px); /* More pronounced lift effect */
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
     background-position: right center; /* Move gradient on hover */
@@ -369,21 +372,21 @@
     cursor: pointer;
   }
 
+
   /* New container for side-by-side sections */
   #historyAndVisualsContainer {
     display: flex;
     flex-direction: column; /* Default to column on small screens */
-    gap: clamp(20px, 5vw, 30px); /* Fluid gap */
+    gap: 30px; /* Space between sections */
     width: 100%;
-    max-width: clamp(300px, 95vw, 1100px); /* Fluid max width */
-    margin-bottom: clamp(20px, 5vw, 30px); /* Fluid margin */
+    max-width: 1100px; /* Match main game area max-width */
+    margin-bottom: 30px;
   }
 
   #historyAndVisualsContainer .card-section {
     margin-bottom: 0; /* Remove individual card-section bottom margin */
   }
 
-  /* Responsive Layout Improvements */
   @media (min-width: 768px) {
     #mainGameArea {
       flex-direction: row; /* Row layout on medium screens and up */
@@ -393,22 +396,21 @@
 
     #carImage {
       width: 50%; /* Take up 50% of the main game area */
-      max-width: 550px; /* Limit maximum width */
+      /* Removed max-width: 550px; to allow it to grow more */
     }
 
     .game-controls-and-results {
-      padding: clamp(25px, 3vw, 30px);
+      padding: 30px;
       max-width: 550px; /* Limit width of controls column */
     }
 
-    #guessInputContainer {
-      flex-direction: row; /* Side-by-side on larger screens */
-      gap: clamp(15px, 2vw, 20px);
+    input[type="text"] {
+      width: 48%; /* Adjust width for two inputs side by side within flex */
+      margin: 0 8px; /* Adjust margins */
     }
 
-    input[type="text"] {
-      width: calc(50% - 10px); /* Two inputs side by side with gap */
-      margin: 0; /* Reset margin for larger screens */
+    #guessInputContainer {
+      flex-wrap: nowrap; /* Prevent wrapping on larger screens */
     }
 
     /* Side-by-side for history and visuals */
@@ -423,7 +425,6 @@
       margin-left: 15px; /* Half of gap for left item */
       margin-right: 15px; /* Half of gap for right item */
     }
-    
     /* Adjust margins for the first and last child to remove extra space */
     #historyAndVisualsContainer > .card-section:first-child {
         margin-left: 0;
@@ -433,19 +434,42 @@
     }
   }
 
-  /* Large screen optimizations */
-  @media (min-width: 1200px) {
-    body {
-      padding: 30px;
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 2.5rem;
     }
-    
-    .card-section {
-      padding: 40px;
+    h2 {
+      font-size: 1.8rem;
+    }
+    button, .button-link {
+      font-size: 0.95rem;
+      padding: 12px 20px;
+    }
+    input[type="text"] {
+      font-size: 0.95rem;
+      padding: 10px;
+      max-width: 100%; /* Allow inputs to take full width on small screens */
+    }
+    #carImage {
+      min-height: 350px; /* Smaller min-height on very small screens */
+    }
+    .guessed-image-item {
+      width: 100px;
+      height: 100px;
+    }
+    #largeGuessedImage {
+      height: 400px; /* Smaller enlarged image height on very small screens */
     }
   }
 </style>
 </head>
 <body>
+
+<!-- Button to link to the make page -->
+<div class="absolute top-4 right-4 z-10">
+    <a href="make.html" class="button-link btn-accent" style="padding: 10px 20px; font-size: 0.9rem;">Make your own Ciardle</a>
+</div>
+
 
 <h1 class="text-4xl font-bold mb-6 text-gray-800">Ciardle</h1>
 
@@ -458,7 +482,7 @@
 </div>
 
 <div id="mainGameArea">
-  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onclick="showLargeImage(this.src)">
+  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e0f2f7/2a4365?text=Car+Image+Not+Found';" onclick="showLargeImage(this.src)">
 
   <div class="game-controls-and-results">
     <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
@@ -860,9 +884,9 @@ async function getCarHint() {
   chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
   const payload = { contents: chatHistory };
-  // IMPORTANT: For deployment outside of this Canvas environment (e.g., GitHub Pages),
-  // you MUST provide your actual Gemini API key here.
-  // Get your API key from: https://aistudio.google.com/app/apikey
+  // SECURITY NOTE: Hardcoding an API key in client-side code is a security risk.
+  // In a production environment, this key should be stored securely on a server
+  // and accessed via a backend endpoint to prevent unauthorized use.
   const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Your Gemini API Key
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
