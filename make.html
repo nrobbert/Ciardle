@@ -4,6 +4,23 @@
 <title>Image Cropper</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <style>
+    /* CSS Variables for consistent theming */
+    :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --secondary-color: #e5e7eb;
+        --secondary-hover: #d1d5db;
+        --text-primary: #374151;
+        --text-secondary: #6b7280;
+        --border-color: #d1d5db;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --border-radius: 0.5rem;
+        --border-radius-lg: 0.75rem;
+        --border-radius-xl: 1rem;
+    }
+
     body {
         margin: 0;
         font-family: 'Inter', sans-serif;
@@ -12,48 +29,176 @@
         justify-content: center;
         align-items: flex-start; /* Align to top */
         min-height: 100vh;
-        padding: 20px;
+        padding: clamp(10px, 3vw, 20px); /* Fluid padding */
     }
+    
     #app-container {
-        max-width: 1200px;
+        max-width: clamp(300px, 95vw, 1200px); /* Fluid max width */
         width: 100%;
         background-color: #ffffff;
-        border-radius: 1rem; /* rounded-2xl */
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
-        padding: 1.5rem; /* p-6 */
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-lg);
+        padding: clamp(1rem, 4vw, 1.5rem); /* Fluid padding */
     }
+    
     canvas {
         display: block;
-        border: 1px solid #d1d5db; /* border-gray-300 */
-        border-radius: 0.5rem; /* rounded-lg */
-        background-color: #f9fafb; /* bg-gray-50 */
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        background-color: #f9fafb;
         max-width: 100%; /* Ensure canvas scales */
         height: auto; /* Maintain aspect ratio */
         cursor: crosshair;
     }
+    
     .input-group {
         display: flex;
-        align-items: center;
-        gap: 0.5rem; /* gap-2 */
+        flex-direction: column; /* Stack vertically on mobile */
+        gap: clamp(0.5rem, 2vw, 1rem); /* Fluid gap */
     }
+    
+    /* Responsive input groups */
+    @media (min-width: 640px) {
+        .input-group {
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+    
     .button-primary {
-        /* Explicitly set background and color */
-        background-color: #2563eb; /* bg-blue-600 */
-        color: #ffffff; /* text-white */
-        @apply px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition duration-200 ease-in-out border border-blue-700;
+        background-color: var(--primary-color);
+        color: #ffffff;
+        padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px); /* Fluid padding */
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--primary-color);
+        font-size: clamp(0.875rem, 2.5vw, 1rem); /* Fluid typography */
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        min-height: 44px; /* Minimum touch target */
+        min-width: 44px; /* Minimum touch target */
     }
+    
+    .button-primary:hover {
+        background-color: var(--primary-hover);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+    
     .button-secondary {
-        /* Explicitly set background and color */
-        background-color: #e5e7eb; /* bg-gray-200 */
-        color: #374151; /* text-gray-800 */
-        @apply px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition duration-200 ease-in-out border border-gray-400;
+        background-color: var(--secondary-color);
+        color: var(--text-primary);
+        padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px); /* Fluid padding */
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        font-size: clamp(0.875rem, 2.5vw, 1rem); /* Fluid typography */
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        min-height: 44px; /* Minimum touch target */
+        min-width: 44px; /* Minimum touch target */
     }
+    
+    .button-secondary:hover {
+        background-color: var(--secondary-hover);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+    
     .img-thumbnail {
-        @apply border border-gray-300 rounded-lg object-contain;
-        width: 100px; /* Fixed width for thumbnails */
-        height: 75px; /* Fixed height for thumbnails */
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        object-fit: contain;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4/3; /* Consistent aspect ratio */
+        min-height: 80px; /* Minimum size for mobile */
     }
-    /* Custom Modal Styles */
+    
+    /* Responsive grid for thumbnails */
+    #croppedImages {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: clamp(0.75rem, 3vw, 1rem);
+    }
+    
+    @media (min-width: 640px) {
+        #croppedImages {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+    
+    /* Input field improvements */
+    input[type="text"] {
+        width: 100%;
+        padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px); /* Fluid padding */
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        font-size: clamp(0.875rem, 2.5vw, 1rem); /* Fluid typography */
+        min-height: 44px; /* Touch target minimum */
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    /* Button grid responsive layout */
+    #makeImage {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: clamp(0.5rem, 2vw, 1rem);
+    }
+    
+    @media (min-width: 640px) {
+        #makeImage {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+    
+    /* Form section improvements */
+    .form-section {
+        background-color: #f9fafb;
+        border-radius: var(--border-radius-lg);
+        padding: clamp(1rem, 3vw, 1.5rem);
+        margin-bottom: clamp(1rem, 3vw, 1.5rem);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .form-section h2 {
+        font-size: clamp(1.25rem, 4vw, 1.5rem);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: clamp(0.75rem, 2vw, 1rem);
+        margin-top: 0;
+    }
+    
+    .form-section label {
+        font-size: clamp(0.875rem, 2.5vw, 1rem);
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: clamp(0.25rem, 1vw, 0.5rem);
+        display: block;
+    }
+    
+    /* Grid improvements for form layouts */
+    .grid-responsive {
+        display: grid;
+        gap: clamp(0.75rem, 3vw, 1rem);
+        grid-template-columns: 1fr;
+    }
+    
+    @media (min-width: 768px) {
+        .grid-responsive {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    /* Modal improvements */
     .modal-overlay {
         position: fixed;
         top: 0;
@@ -61,33 +206,133 @@
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
-        display: flex; /* Default display for overlay when visible */
+        display: flex;
         justify-content: center;
         align-items: center;
         z-index: 1000;
+        padding: clamp(1rem, 4vw, 2rem); /* Ensure modal doesn't touch edges */
     }
+    
     .modal-content {
         background-color: white;
-        padding: 2rem;
-        border-radius: 0.75rem; /* rounded-xl */
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        max-width: 400px;
+        padding: clamp(1.5rem, 4vw, 2rem); /* Fluid padding */
+        border-radius: var(--border-radius-xl);
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+        max-width: clamp(300px, 90vw, 400px); /* Fluid max width */
+        width: 100%;
         text-align: center;
     }
+    
+    .modal-content p {
+        font-size: clamp(1rem, 3vw, 1.125rem); /* Fluid typography */
+        color: var(--text-secondary);
+        margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    }
+    
     .modal-button {
-        @apply bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 hover:bg-blue-700;
-        cursor: pointer; /* Added cursor pointer for better UX */
+        background-color: var(--primary-color);
+        color: white;
+        padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px);
+        border-radius: var(--border-radius-lg);
+        border: none;
+        font-size: clamp(0.875rem, 2.5vw, 1rem);
+        font-weight: 500;
+        cursor: pointer;
+        min-height: 44px;
+        min-width: 44px;
+        transition: background-color 0.2s ease-in-out;
+    }
+    
+    .modal-button:hover {
+        background-color: var(--primary-hover);
     }
 
-    /* Landing screen specific styles */
+    /* Landing screen improvements */
     #landingScreen {
         background-color: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        padding: 2rem;
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-lg);
+        padding: clamp(2rem, 6vw, 3rem); /* Fluid padding */
         text-align: center;
-        max-width: 500px;
+        max-width: clamp(300px, 90vw, 500px); /* Fluid max width */
         width: 100%;
+    }
+    
+    #landingScreen h1 {
+        font-size: clamp(2rem, 6vw, 2.5rem); /* Fluid typography */
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: clamp(1.5rem, 4vw, 2rem);
+    }
+    
+    #landingScreen p {
+        font-size: clamp(1.125rem, 3vw, 1.25rem); /* Fluid typography */
+        color: var(--text-secondary);
+        margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    }
+    
+    #landingScreen .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(0.75rem, 2vw, 1rem);
+    }
+    
+    @media (min-width: 480px) {
+        #landingScreen .button-group {
+            flex-direction: row;
+            justify-content: center;
+        }
+    }
+    
+    #landingScreen .button-group button {
+        font-size: clamp(1rem, 3vw, 1.125rem);
+        padding: clamp(12px, 3vw, 16px) clamp(24px, 5vw, 32px);
+    }
+    
+    /* Loading indicator improvements */
+    .loading-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(0.5rem, 2vw, 1rem);
+        margin-top: clamp(1rem, 3vw, 1.5rem);
+    }
+    
+    .loading-spinner {
+        width: clamp(24px, 6vw, 32px);
+        height: clamp(24px, 6vw, 32px);
+        border: 2px solid #e5e7eb;
+        border-top: 2px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+        color: var(--primary-color);
+        font-size: clamp(0.875rem, 2.5vw, 1rem);
+        font-weight: 500;
+    }
+    
+    /* Result text improvements */
+    #resultText {
+        font-size: clamp(1rem, 3vw, 1.125rem);
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-top: clamp(1rem, 3vw, 1.5rem);
+        text-align: center;
+    }
+    
+    /* Main title improvements */
+    .main-title {
+        font-size: clamp(1.875rem, 5vw, 2.25rem); /* Fluid typography */
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: clamp(1.5rem, 4vw, 2rem);
+        text-align: center;
     }
 </style>
 </head>
@@ -111,74 +356,72 @@
 
 <!-- Landing Screen -->
 <div id="landingScreen" class="flex flex-col items-center justify-center min-h-screen" style="display: flex;">
-    <h1 class="text-4xl font-bold text-gray-800 mb-8">Welcome to Ciardle Asset Creator</h1>
-    <p class="text-xl text-gray-700 mb-6">Are you Brad?</p>
-    <div class="flex space-x-4">
-        <button onclick="isBrad(true)" class="button-primary text-xl">Yes</button>
-        <button onclick="isBrad(false)" class="button-secondary text-xl">No</button>
+    <h1 class="main-title">Welcome to Ciardle Asset Creator</h1>
+    <p>Are you Brad?</p>
+    <div class="button-group">
+        <button onclick="isBrad(true)" class="button-primary">Yes</button>
+        <button onclick="isBrad(false)" class="button-secondary">No</button>
     </div>
 </div>
 
 <!-- Main Application Content (Initially hidden) -->
 <div id="app-container" style="display: none;">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Ciardle Image Cropper & Uploader</h1>
+    <h1 class="main-title">Ciardle Image Cropper & Uploader</h1>
 
     <div class="space-y-6">
-        <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
-            <label for="uniqueCode" class="block text-sm font-medium text-gray-700 mb-1">Unique Code (for game asset ID):</label>
+        <div class="form-section">
+            <label for="uniqueCode">Unique Code (for game asset ID):</label>
             <div class="input-group">
-                <input type="text" id="uniqueCode" value="" class="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none">
+                <input type="text" id="uniqueCode" value="" placeholder="Enter unique code">
                 <button onclick="copyLink()" class="button-secondary">Copy Link</button>
             </div>
         </div>
 
-        <!-- NEW: Updated Image Loading Section -->
-        <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Load Source Image</label>
-            <div class="space-y-2">
-                <div class="input-group">
-                    <input type="text" id="imageURL" value="https://upload.wikimedia.org/wikipedia/commons/5/55/JDV584V_1980_Triumph_Spitfire_1500.jpg" size="50" class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter image URL">
-                    <button onclick="loadImageFromUrl()" class="button-primary">Load from URL</button>
-                </div>
-                <div class="text-center">
-                    <span class="text-sm text-gray-500">OR</span>
+        <!-- Updated Image Loading Section -->
+        <div class="form-section">
+            <h2>Load Source Image</h2>
+            <div class="input-group">
+                <input type="text" id="imageURL" value="https://upload.wikimedia.org/wikipedia/commons/5/55/JDV584V_1980_Triumph_Spitfire_1500.jpg" placeholder="Enter image URL">
+                <button onclick="loadImageFromUrl()" class="button-primary">Load from URL</button>
+            </div>
+            <div style="text-align: center; margin: 1rem 0;">
+                <span style="color: #6b7280; font-size: 0.875rem;">OR</span>
+            </div>
+            <div>
+                <!-- This input is hidden and triggered by the button below -->
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                <button onclick="document.getElementById('imageUpload').click()" class="button-secondary" style="width: 100%;">Upload from Computer</button>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <canvas id="OriginalCanvas"></canvas>
+        </div>
+
+        <div class="form-section">
+            <h2>Car Details</h2>
+            <div class="grid-responsive">
+                <div>
+                    <label for="CarMake">Make:</label>
+                    <input type="text" id="CarMake" value="" placeholder="Enter car make">
                 </div>
                 <div>
-                    <!-- This input is hidden and triggered by the button below -->
-                    <input type="file" id="imageUpload" accept="image/*" class="hidden">
-                    <button onclick="document.getElementById('imageUpload').click()" class="button-secondary w-full">Upload from Computer</button>
+                    <label for="CarModel">Model:</label>
+                    <input type="text" id="CarModel" value="" placeholder="Enter car model">
                 </div>
             </div>
         </div>
 
-        <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
-            <canvas id="OriginalCanvas" class="w-full h-auto"></canvas>
-        </div>
-
-        <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Car Details</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="CarMake" class="block text-sm font-medium text-gray-700 mb-1">Make:</label>
-                    <input type="text" id="CarMake" value="" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label for="CarModel" class="block text-sm font-medium text-gray-700 mb-1">Model:</label>
-                    <input type="text" id="CarModel" value="" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Crop & Preview Images</h2>
-            <div id="makeImage" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+        <div class="form-section">
+            <h2>Crop & Preview Images</h2>
+            <div id="makeImage">
                 <button onclick="cropImage(1)" class="button-secondary">Make Image 1</button>
                 <button onclick="cropImage(2)" class="button-secondary">Make Image 2</button>
                 <button onclick="cropImage(3)" class="button-secondary">Make Image 3</button>
                 <button onclick="cropImage(4)" class="button-secondary">Make Image 4</button>
                 <button onclick="cropImage(5)" class="button-secondary">Make Image 5</button>
             </div>
-            <div id="croppedImages" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div id="croppedImages">
                 <img id="Image1" alt="Image 1" class="img-thumbnail">
                 <img id="Image2" alt="Image 2" class="img-thumbnail">
                 <img id="Image3" alt="Image 3" class="img-thumbnail">
@@ -187,12 +430,12 @@
             </div>
         </div>
 
-        <div class="p-4 bg-gray-50 rounded-lg shadow-inner text-center">
-            <button onclick="uploadImages()" class="button-primary w-full py-3 text-lg">Upload All Images & Data</button>
-            <p id="resultText" class="mt-4 text-gray-700 font-medium"></p>
-            <div id="loadingIndicator" class="hidden mt-4">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p class="text-blue-600 text-sm mt-2">Uploading, please wait...</p>
+        <div class="form-section" style="text-align: center;">
+            <button onclick="uploadImages()" class="button-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem;">Upload All Images & Data</button>
+            <p id="resultText"></p>
+            <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Uploading, please wait...</p>
             </div>
         </div>
     </div>
@@ -777,7 +1020,7 @@
 
         // Clear previous messages and show loading indicator
         resultText.textContent = "";
-        loadingIndicator.classList.remove('hidden');
+        loadingIndicator.style.display = 'flex';
 
         // Cloudinary configuration (replace with your actual Cloudinary details)
         const cloudName = 'nickrobberts'; // Your Cloudinary cloud name
@@ -819,7 +1062,7 @@
             resultText.textContent = "Upload failed. See console for details.";
             showMessage(`Upload Failed: ${error.message}`); // Keep this error message for manual dismissal
         } finally {
-            loadingIndicator.classList.add('hidden'); // Hide loading indicator
+            loadingIndicator.style.display = 'none'; // Hide loading indicator
         }
     }
     // Make uploadImages globally accessible
