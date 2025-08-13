@@ -21,6 +21,7 @@
     align-items: center;
     min-height: 100vh;
     overflow-x: hidden; /* Prevent horizontal scroll */
+    position: relative; /* Added for positioning context */
   }
 
   /* Headings */
@@ -42,7 +43,7 @@
   }
 
   /* Buttons */
-  button {
+  button, .button-link {
     font-size: 1.1rem; /* Slightly larger font for buttons */
     padding: 14px 28px; /* More generous padding */
     border-radius: 12px; /* More rounded corners */
@@ -53,9 +54,11 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* More prominent shadow */
     color: white;
     background-size: 200% auto; /* For gradient animation */
+    text-decoration: none; /* For <a> tags styled as buttons */
+    display: inline-block; /* For <a> tags */
   }
 
-  button:hover {
+  button:hover, .button-link:hover {
     transform: translateY(-3px); /* More pronounced lift effect */
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
     background-position: right center; /* Move gradient on hover */
@@ -431,7 +434,7 @@
     h2 {
       font-size: 1.8rem;
     }
-    button {
+    button, .button-link {
       font-size: 0.95rem;
       padding: 12px 20px;
     }
@@ -455,6 +458,12 @@
 </head>
 <body>
 
+<!-- Button to link to the make page -->
+<div class="absolute top-4 right-4 z-10">
+    <a href="make.html" class="button-link btn-accent" style="padding: 10px 20px; font-size: 0.9rem;">Make your own Ciardle</a>
+</div>
+
+
 <h1 class="text-4xl font-bold mb-6 text-gray-800">Ciardle</h1>
 
 <div id="Code" class="card-section flex flex-col items-center">
@@ -466,7 +475,7 @@
 </div>
 
 <div id="mainGameArea">
-  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onclick="showLargeImage(this.src)">
+  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e0f2f7/2a4365?text=Car+Image+Not+Found';" onclick="showLargeImage(this.src)">
 
   <div class="game-controls-and-results">
     <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
@@ -868,9 +877,9 @@ async function getCarHint() {
   chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
   const payload = { contents: chatHistory };
-  // IMPORTANT: For deployment outside of this Canvas environment (e.g., GitHub Pages),
-  // you MUST provide your actual Gemini API key here.
-  // Get your API key from: https://aistudio.google.com/app/apikey
+  // SECURITY NOTE: Hardcoding an API key in client-side code is a security risk.
+  // In a production environment, this key should be stored securely on a server
+  // and accessed via a backend endpoint to prevent unauthorized use.
   const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Your Gemini API Key
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
