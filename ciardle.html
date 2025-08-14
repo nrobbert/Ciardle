@@ -1299,10 +1299,10 @@
           console.log("Game session score submitted successfully:", gameSessionScoreData);
           resultText.textContent += " Score submitted to leaderboard!";
 
-          // Update user statistics
-          const userStatsDocRef = doc(db, `artifacts/${appId}/public/data/userStats`, userId);
+          // Update user statistics - NOW USING USERNAME AS THE DOCUMENT ID
+          const userStatsDocRef = doc(db, `artifacts/${appId}/public/data/userStats`, username); 
           let userStatsUpdateData = {
-              username: username, // Always keep username updated
+              username: username, // Always keep username updated in the document content
               totalGamesPlayed: increment(1),
               lastUpdated: serverTimestamp()
           };
@@ -1348,7 +1348,7 @@
       try {
           const userStatsCollectionRef = collection(db, `artifacts/${appId}/public/data/userStats`);
           // Fetch all user stats, then sort and limit client-side
-          const q = query(userStatsCollectionRef); // No orderBy or limit here
+          const q = query(userStatsCollectionRef); 
 
           // Listen for real-time updates
           onSnapshot(q, (snapshot) => {
