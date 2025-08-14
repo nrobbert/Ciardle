@@ -380,6 +380,62 @@
     background-color: #d4e7e9;
   }
 
+  /* Username Modal Styles */
+  #usernameModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's on top */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  #usernameModal.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #usernameModal .modal-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+
+  #usernameModal.visible .modal-content {
+    transform: translateY(0);
+  }
+
+  #usernameModal h2 {
+      font-size: 1.8rem;
+      color: #2a4365;
+      margin-bottom: 1rem;
+      margin-top: 0; /* Override h2 default margin-top for modal */
+  }
+
+  #usernameModal p {
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      color: #4a5568;
+  }
+
+  #usernameModal input {
+      margin-bottom: 1.5rem;
+      max-width: 100%; /* Ensure input fills modal width */
+  }
+
 
   @media (min-width: 768px) {
     #mainGameArea {
@@ -477,7 +533,7 @@
 </div>
 
 <div id="mainGameArea">
-  <img id="carImage" alt="Car Image" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e0f2f7/2a4365?text=Start+a+Ciardle+Game';" onclick="showLargeImage(this.src)">
+  <img id="carImage" src="https://placehold.co/600x400/e0f2f7/2a4365?text=Start+a+Ciardle+Game" alt="Car Image" onclick="showLargeImage(this.src)">
 
   <div class="game-controls-and-results">
     <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
@@ -896,7 +952,7 @@
 
     // Determine the emojis for shareable results
     const makeEmoji = userGuessMakeCorrect ? '🟩' : '🟥';
-    const modelEmoji = userGuessModelCorrect ? '🟩' : '�';
+    const modelEmoji = userGuessModelCorrect ? '🟩' : '🟥';
 
     // Add to shareable results history (using emojis for copy-paste graphical appeal)
     shareableResultsHistory.push(`Attempt ${currentGuessAttempts}: Make ${makeEmoji}, Model ${modelEmoji}`);
@@ -1328,4 +1384,3 @@
 
 </body>
 </html>
-�
