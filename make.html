@@ -828,7 +828,38 @@
     }
 
     /**
-     * Loads an image from the provided URL into the canvas.
+     * Processes and downsizes an image if it's too large.
+     * @param {HTMLImageElement} sourceImage - The source image to process
+     * @param {number} maxWidth - Maximum width allowed
+     * @param {number} maxHeight - Maximum height allowed
+     * @returns {string} Data URL of the processed image
+     */
+    function processAndDownsizeImage(sourceImage, maxWidth = 2048, maxHeight = 2048) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let { width, height } = sourceImage;
+        
+        // Calculate new dimensions if downsizing is needed
+        if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+        }
+        
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw the image with new dimensions
+        ctx.drawImage(sourceImage, 0, 0, width, height);
+        
+        // Return as data URL
+        return canvas.toDataURL('image/jpeg', 0.85); // 85% quality for reasonable file size
+    }
+
+    /**
+     * Loads an image from the provided URL into the canvas with robust error handling and downsizing.
      */
     function loadImageFromUrl() {
         const url = document.getElementById('imageURL').value;
@@ -836,13 +867,52 @@
             showMessage("Please enter an image URL.");
             return;
         }
+        
         resultText.textContent = "Loading image...";
         // Clear the file input value if a URL is being loaded
         imageUploadInput.value = '';
-        carImage.src = url;
+        
+        // Create a temporary image element for processing
+        const tempImage = new Image();
+        
+        // Set up error handling
+        tempImage.onerror = function() {
+            showMessage("Failed to load image. This may be due to CORS restrictions, network issues, or invalid URL. Try uploading the image from your computer instead.", true);
+            resultText.textContent = "Image load failed.";
+        };
+        
+        // Set up success handling with processing
+        tempImage.onload = function() {
+            try {
+                // Check if image is too large and process it
+                const originalSize = tempImage.naturalWidth * tempImage.naturalHeight;
+                const maxPixels = 2048 * 2048; // 4 megapixels max
+                
+                if (originalSize > maxPixels) {
+                    resultText.textContent = "Processing large image...";
+                    // Downsize the image
+                    const processedDataUrl = processAndDownsizeImage(tempImage);
+                    carImage.src = processedDataUrl;
+                    showMessage(`Image was downsized from ${tempImage.naturalWidth}×${tempImage.naturalHeight} for better performance.`, true);
+                } else {
+                    // Image is reasonable size, use directly
+                    carImage.src = url;
+                }
+            } catch (error) {
+                showMessage("Error processing image: " + error.message, true);
+                resultText.textContent = "Image processing failed.";
+            }
+        };
+        
+        // Enable CORS for cross-origin images when possible
+        tempImage.crossOrigin = "anonymous";
+        
+        // Start loading the image
+        tempImage.src = url;
     }
-    // Make loadImageFromUrl globally accessible
+    // Make functions globally accessible
     window.loadImageFromUrl = loadImageFromUrl;
+    window.processAndDownsizeImage = processAndDownsizeImage;
 
     // NEW: Event listener for the file input
     imageUploadInput.addEventListener('change', (event) => {
