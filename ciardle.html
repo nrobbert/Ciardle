@@ -633,8 +633,8 @@
             <tr>
                 <th>Rank</th>
                 <th>Username</th>
+                <th>Success %</th>
                 <th>Games Played</th>
-                <th>Correct Guesses</th>
                 <th>Avg. Attempts (Correct)</th>
             </tr>
         </thead>
@@ -1168,7 +1168,7 @@
     // SECURITY NOTE: Hardcoding an API key in client-side code is a security risk.
     // In a production environment, this key should be stored securely on a server
     // and accessed via a backend endpoint to prevent unauthorized use.
-    const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY";
+    const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Canvas will inject this. For local testing, put your key here.
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
     try {
@@ -1363,17 +1363,29 @@
                       userStats.push(doc.data());
                   });
 
-                  // Sort client-side: by totalCorrectGuesses (desc) then averageAttemptsPerCorrectGuess (asc)
+                  // Calculate percentage success for each user
+                  userStats.forEach(stat => {
+                      const totalGames = stat.totalGamesPlayed || 0;
+                      const correctGuesses = stat.totalCorrectGuesses || 0;
+                      stat.percentageSuccess = totalGames > 0 ? (correctGuesses / totalGames) * 100 : 0;
+                  });
+
+                  // Sort client-side: by percentageSuccess (desc), then totalCorrectGuesses (desc), then averageAttemptsPerCorrectGuess (asc)
                   userStats.sort((a, b) => {
+                      const successA = a.percentageSuccess || 0;
+                      const successB = b.percentageSuccess || 0;
                       const correctA = a.totalCorrectGuesses || 0;
                       const correctB = b.totalCorrectGuesses || 0;
-                      const avgA = a.averageAttemptsPerCorrectGuess || Infinity; // Treat 0 correct guesses as infinite average for sorting
+                      const avgA = a.averageAttemptsPerCorrectGuess || Infinity; 
                       const avgB = b.averageAttemptsPerCorrectGuess || Infinity;
 
-                      if (correctA !== correctB) {
-                          return correctB - correctA; // More correct guesses first
+                      if (successA !== successB) {
+                          return successB - successA; // Higher success percentage first
                       }
-                      return avgA - avgB; // Then, fewer average attempts first
+                      if (correctA !== correctB) {
+                          return correctB - correctA; // Then, more correct guesses
+                      }
+                      return avgA - avgB; // Finally, fewer average attempts
                   });
 
                   // Limit to top 10
@@ -1384,8 +1396,8 @@
                       const row = leaderboardTableBody.insertRow();
                       row.insertCell(0).textContent = rank++;
                       row.insertCell(1).textContent = data.username || 'Anonymous';
-                      row.insertCell(2).textContent = data.totalGamesPlayed || 0;
-                      row.insertCell(3).textContent = data.totalCorrectGuesses || 0;
+                      row.insertCell(2).textContent = data.percentageSuccess ? data.percentageSuccess.toFixed(2) + '%' : '0.00%';
+                      row.insertCell(3).textContent = data.totalGamesPlayed || 0;
                       row.insertCell(4).textContent = data.averageAttemptsPerCorrectGuess ? data.averageAttemptsPerCorrectGuess.toFixed(2) : 'N/A';
                   });
               }
@@ -1431,4 +1443,3 @@
 
 </body>
 </html>
-
