@@ -832,13 +832,19 @@
      * @param {HTMLImageElement} sourceImage - The source image to process
      * @param {number} maxWidth - Maximum width allowed
      * @param {number} maxHeight - Maximum height allowed
+     * @param {number} quality - JPEG quality (0.1 to 1.0)
      * @returns {string} Data URL of the processed image
      */
-    function processAndDownsizeImage(sourceImage, maxWidth = 2048, maxHeight = 2048) {
+    function processAndDownsizeImage(sourceImage, maxWidth = 2048, maxHeight = 2048, quality = 0.85) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        let { width, height } = sourceImage;
+        let { naturalWidth: width, naturalHeight: height } = sourceImage;
+        
+        // Ensure we have valid dimensions
+        if (!width || !height || width <= 0 || height <= 0) {
+            throw new Error('Invalid image dimensions');
+        }
         
         // Calculate new dimensions if downsizing is needed
         if (width > maxWidth || height > maxHeight) {
@@ -851,11 +857,24 @@
         canvas.width = width;
         canvas.height = height;
         
+        // Configure canvas for better image quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Clear canvas with white background (helps with transparent images)
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        
         // Draw the image with new dimensions
         ctx.drawImage(sourceImage, 0, 0, width, height);
         
-        // Return as data URL
-        return canvas.toDataURL('image/jpeg', 0.85); // 85% quality for reasonable file size
+        // Return as data URL with appropriate format and quality
+        try {
+            return canvas.toDataURL('image/jpeg', quality);
+        } catch (e) {
+            // Fallback to PNG if JPEG fails
+            return canvas.toDataURL('image/png');
+        }
     }
 
     /**
@@ -872,46 +891,93 @@
         // Clear the file input value if a URL is being loaded
         imageUploadInput.value = '';
         
-        // Create a temporary image element for processing
+        // Try loading with multiple strategies
+        loadImageWithFallback(url, 0);
+    }
+    
+    /**
+     * Attempts to load an image with multiple fallback strategies for better reliability.
+     * @param {string} url - The image URL to load
+     * @param {number} attempt - Current attempt number (0-based)
+     */
+    function loadImageWithFallback(url, attempt = 0) {
+        const strategies = [
+            { cors: "anonymous", desc: "with CORS anonymous" },
+            { cors: null, desc: "without CORS" },
+            { cors: "use-credentials", desc: "with CORS credentials" }
+        ];
+        
+        if (attempt >= strategies.length) {
+            showMessage("Failed to load image after trying multiple methods. This may be due to CORS restrictions, server blocking, or network issues. Try uploading the image from your computer instead.", true);
+            resultText.textContent = "Image load failed.";
+            return;
+        }
+        
+        const strategy = strategies[attempt];
         const tempImage = new Image();
         
-        // Set up error handling
+        // Add timeout for each attempt
+        const timeoutId = setTimeout(() => {
+            console.log(`Load attempt ${attempt + 1} timed out (${strategy.desc}), trying next strategy...`);
+            loadImageWithFallback(url, attempt + 1);
+        }, 15000); // 15 second timeout per attempt
+        
+        // Set up error handling with retry
         tempImage.onerror = function() {
-            showMessage("Failed to load image. This may be due to CORS restrictions, network issues, or invalid URL. Try uploading the image from your computer instead.", true);
-            resultText.textContent = "Image load failed.";
+            clearTimeout(timeoutId);
+            console.log(`Load attempt ${attempt + 1} failed (${strategy.desc}), trying next strategy...`);
+            // Try next strategy after a short delay
+            setTimeout(() => {
+                loadImageWithFallback(url, attempt + 1);
+            }, 100);
         };
         
         // Set up success handling with processing
         tempImage.onload = function() {
+            clearTimeout(timeoutId);
             try {
-                // Check if image is too large and process it
+                // Validate image dimensions
+                if (!tempImage.naturalWidth || !tempImage.naturalHeight) {
+                    throw new Error('Image loaded but has invalid dimensions');
+                }
+                
+                // Always process the image to create a data URL, avoiding CORS issues
+                resultText.textContent = "Processing image...";
+                
                 const originalSize = tempImage.naturalWidth * tempImage.naturalHeight;
                 const maxPixels = 2048 * 2048; // 4 megapixels max
                 
+                let processedDataUrl;
                 if (originalSize > maxPixels) {
-                    resultText.textContent = "Processing large image...";
-                    // Downsize the image
-                    const processedDataUrl = processAndDownsizeImage(tempImage);
-                    carImage.src = processedDataUrl;
-                    showMessage(`Image was downsized from ${tempImage.naturalWidth}×${tempImage.naturalHeight} for better performance.`, true);
+                    // Downsize large images
+                    processedDataUrl = processAndDownsizeImage(tempImage);
+                    showMessage(`Large image (${tempImage.naturalWidth}×${tempImage.naturalHeight}) was downsized for better performance.`, true);
                 } else {
-                    // Image is reasonable size, use directly
-                    carImage.src = url;
+                    // Process smaller images without downsizing to ensure we have a data URL
+                    processedDataUrl = processAndDownsizeImage(tempImage, tempImage.naturalWidth, tempImage.naturalHeight);
                 }
+                
+                // Always use the processed data URL to avoid CORS issues
+                carImage.src = processedDataUrl;
+                
             } catch (error) {
-                showMessage("Error processing image: " + error.message, true);
+                console.error("Image processing error:", error);
+                showMessage("Error processing image: " + error.message + ". Try uploading from computer instead.", true);
                 resultText.textContent = "Image processing failed.";
             }
         };
         
-        // Enable CORS for cross-origin images when possible
-        tempImage.crossOrigin = "anonymous";
+        // Apply the current strategy
+        if (strategy.cors) {
+            tempImage.crossOrigin = strategy.cors;
+        }
         
         // Start loading the image
         tempImage.src = url;
     }
     // Make functions globally accessible
     window.loadImageFromUrl = loadImageFromUrl;
+    window.loadImageWithFallback = loadImageWithFallback;
     window.processAndDownsizeImage = processAndDownsizeImage;
 
     // NEW: Event listener for the file input
