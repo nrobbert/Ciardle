@@ -1271,6 +1271,7 @@
       }
 
       const leaderboardCollectionRef = collection(db, `artifacts/${appId}/public/data/leaderboard`);
+      // It's still valid to check if this specific game session (userId + uniqueCode) was already submitted
       const userSpecificGameQuery = query(leaderboardCollectionRef, 
                       where("userId", "==", userId), 
                       where("uniqueCode", "==", uniqueCode || 'unknown'));
@@ -1279,27 +1280,28 @@
           const querySnapshot = await getDocs(userSpecificGameQuery);
 
           if (!querySnapshot.empty) {
-              // A score for this user and code already exists
+              // A score for this user and code already exists in the 'leaderboard' (session) collection
               resultText.textContent += " You have already submitted a score for this game code.";
-              console.log("Score not submitted: Already exists for this user and code.");
-              return;
+              console.log("Game session score not submitted to session collection: Already exists.");
+              // IMPORTANT: Continue to update userStats even if session already exists,
+              // as userStats aggregates totals.
+          } else {
+              // Only add to the 'leaderboard' (session) collection if it doesn't already exist for this user/game.
+              const gameSessionScoreData = {
+                  userId: userId,
+                  username: username,
+                  uniqueCode: uniqueCode || 'unknown',
+                  attempts: currentGuessAttempts,
+                  isCorrectGuess: gameWasCorrectlyGuessed, // Use the global flag set by endGame
+                  timestamp: serverTimestamp()
+              };
+              await addDoc(leaderboardCollectionRef, gameSessionScoreData);
+              console.log("Game session score submitted successfully:", gameSessionScoreData);
+              resultText.textContent += " Score submitted to leaderboard!";
           }
 
-          // No existing score found for this user and code, proceed with adding the new one
-          const gameSessionScoreData = {
-              userId: userId,
-              username: username,
-              uniqueCode: uniqueCode || 'unknown',
-              attempts: currentGuessAttempts,
-              isCorrectGuess: gameWasCorrectlyGuessed, // Use the global flag set by endGame
-              timestamp: serverTimestamp()
-          };
 
-          await addDoc(leaderboardCollectionRef, gameSessionScoreData);
-          console.log("Game session score submitted successfully:", gameSessionScoreData);
-          resultText.textContent += " Score submitted to leaderboard!";
-
-          // Update user statistics - NOW USING USERNAME AS THE DOCUMENT ID
+          // Update user statistics - NOW USING USERNAME AS THE DOCUMENT ID for aggregation
           const userStatsDocRef = doc(db, `artifacts/${appId}/public/data/userStats`, username); 
           let userStatsUpdateData = {
               username: username, // Always keep username updated in the document content
