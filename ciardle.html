@@ -219,7 +219,7 @@
     margin: 0 auto; /* Removed top/bottom margin, handled by parent container */
     border-collapse: separate;
     border-spacing: 0;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px (0, 0, 0, 0.1);
     border-radius: 18px;
     overflow: hidden; /* Ensures rounded corners clip content */
     background-color: #ffffff;
@@ -339,53 +339,146 @@
     margin-top: 10px;
   }
 
-  /* Image Overlay Styles */
-  #imageOverlay {
+  /* Leaderboard Styles */
+  #leaderboardContainer {
+    display: none; /* Hidden by default */
+    margin-top: clamp(20px, 5vw, 30px);
+    padding: clamp(20px, 4vw, 25px);
+    background-color: #f0f4f8;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    max-width: clamp(300px, 90vw, 700px);
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #d0dce7;
+  }
+
+  #leaderboardTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  #leaderboardTable th, #leaderboardTable td {
+    border: 1px solid #e2e8f0;
+    padding: 10px;
+    text-align: left;
+  }
+
+  #leaderboardTable th {
+    background-color: #e0f7fa;
+    font-weight: bold;
+    color: #00796b;
+  }
+
+  #leaderboardTable tr:nth-child(even) {
+    background-color: #f0f8f9;
+  }
+
+  #leaderboardTable tr:hover {
+    background-color: #d4e7e9;
+  }
+
+  /* Username Modal Styles */
+  #usernameModal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* Darker overlay */
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 1000;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's on top */
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease; /* Slower transition */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
   }
 
-  #imageOverlay.visible {
+  #usernameModal.visible {
     opacity: 1;
     visibility: visible;
   }
 
-  #largeGuessedImage {
-    height: 500px; /* Fixed height for enlarged image */
-    width: auto; /* Maintain aspect ratio */
-    max-width: 90%; /* Adjusted max-width to give more breathing room */
-    object-fit: contain; /* Ensure the whole image is visible within the 500px height */
-    border: 6px solid white; /* Thicker white border */
-    border-radius: 20px; /* More rounded */
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.7); /* Stronger glow */
-    cursor: pointer;
+  #usernameModal .modal-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
   }
 
+  #usernameModal.visible .modal-content {
+    transform: translateY(0);
+  }
 
-  /* New container for side-by-side sections */
-  #historyAndVisualsContainer {
-    display: flex;
-    flex-direction: column; /* Default to column on small screens */
-    gap: 30px; /* Space between sections */
+  #usernameModal h2 {
+      font-size: 1.8rem;
+      color: #2a4365;
+      margin-bottom: 1rem;
+      margin-top: 0; /* Override h2 default margin-top for modal */
+  }
+
+  #usernameModal p {
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      color: #4a5568;
+  }
+
+  #usernameModal input {
+      margin-bottom: 1.5rem;
+      max-width: 100%; /* Ensure input fills modal width */
+  }
+
+  /* Image Modal Content Styling */
+  #imageOverlay { /* Changed to display: none initially */
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 1100px; /* Match main game area max-width */
-    margin-bottom: 30px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    display: none; /* Hidden by default, does not take up space */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's on top */
+    opacity: 0; /* Still use for transition */
+    visibility: hidden; /* Still use for transition */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
   }
 
-  #historyAndVisualsContainer .card-section {
-    margin-bottom: 0; /* Remove individual card-section bottom margin */
+  #imageOverlay.visible {
+    display: flex; /* Show as flex container when visible */
+    opacity: 1;
+    visibility: visible;
   }
+
+  .image-modal-content {
+    background-color: #ffffff;
+    padding: 20px; /* Slightly less padding for images */
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    max-width: 80%; /* Max width for the image container */
+    max-height: 90%; /* Max height for the image container */
+    display: flex; /* Use flex to center image horizontally and vertically */
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Hide overflow if image is too big */
+  }
+
+  .image-modal-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ensure the image fits without cropping */
+    border-radius: 12px; /* Rounded corners for the image itself */
+  }
+
 
   @media (min-width: 768px) {
     #mainGameArea {
@@ -448,7 +541,7 @@
     input[type="text"] {
       font-size: 0.95rem;
       padding: 10px;
-      max-width: 100%; /* Allow inputs to take full width on small screens */
+      max-width: 100%; /* Allow inputs to take full full width on small screens */
     }
     #carImage {
       min-height: 350px; /* Smaller min-height on very small screens */
@@ -491,6 +584,7 @@
 
 
 <h1 class="text-4xl font-bold mb-6 text-gray-800">Ciardle</h1>
+<p id="welcomeMessage" class="text-xl font-semibold my-4 text-gray-700"></p>
 
 <div id="Code" class="card-section flex flex-col items-center">
   <div class="flex flex-col sm:flex-row items-center justify-center w-full max-w-md">
@@ -501,7 +595,7 @@
 </div>
 
 <div id="mainGameArea">
-  <img id="carImage" src="Ciardlelogo.png" alt="Car Image" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e0f2f7/2a4365?text=Car+Image+Not+Found';" onclick="showLargeImage(this.src)">
+  <img id="carImage" src="https://placehold.co/600x400/e0f2f7/2a4365?text=Start+a+Ciardle+Game" alt="Car Image" onclick="showLargeImage(this.src)">
 
   <div class="game-controls-and-results">
     <p id="resultText" class="text-xl font-semibold my-4 text-gray-700"></p>
@@ -550,468 +644,820 @@
   <p id="copyMessage" class="text-sm text-green-700 mt-2 hidden">Copied to clipboard!</p>
 </div>
 
-<!-- Image Overlay for large view -->
-<div id="imageOverlay" onclick="hideLargeImage()">
-  <img id="largeGuessedImage" src="" alt="Large Guessed Car Image">
+<!-- Leaderboard Container -->
+<h2 id="leaderboardTitle" class="text-2xl font-bold mt-8 mb-4 text-gray-700" style="display: none;">Leaderboard</h2>
+<div id="leaderboardContainer" class="card-section">
+    <table id="leaderboardTable">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Username</th>
+                <th>Success %</th>
+                <th>Games Played</th>
+                <th>Avg. Attempts (Correct)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Leaderboard data will be inserted here -->
+        </tbody>
+    </table>
+    <button onclick="loadLeaderboard()" class="btn-secondary mt-4">Refresh Leaderboard</button>
 </div>
 
 
-<script>
-let carImage = document.getElementById("carImage");
-let resultText = document.getElementById("resultText");
-let guessMake = document.getElementById("guessMake");
-let guessModel = document.getElementById("guessModel");
-let guessButton = document.getElementById("guessButton");
-let goButton = document.getElementById("goButton");
-let getHintButton = document.getElementById("getHintButton"); // Get the hint button
-let hintText = document.getElementById("hintText"); // Get the hint text paragraph
-let imageOverlay = document.getElementById("imageOverlay"); // Get the image overlay div
-let largeGuessedImage = document.getElementById("largeGuessedImage"); // Get the large image inside the overlay
-let shareableResultsContainer = document.getElementById("shareableResultsContainer"); // Get the shareable results container
-let shareableResultsTitle = document.getElementById("shareableResultsTitle"); // Get the shareable results title
-let guessInputContainer = document.getElementById("guessInputContainer"); // New: Get the container for guess inputs
+<!-- Image Overlay for large view -->
+<div id="imageOverlay" onclick="hideLargeImage()">
+  <div class="image-modal-content">
+    <img id="largeGuessedImage" src="" alt="Large Guessed Car Image">
+  </div>
+</div>
 
-let cars = []; // This array is not used in the current version as car info comes from Cloudinary
-let currentCar; // This variable is not used in the current version
-let CarMake, CarModel; // These will hold the actual make and model from Cloudinary
-let currentGuessAttempts;
-let uniqueCode;
-let MakeCorrect = false; // This variable is not directly used to control logic
-let ModelCorrect = false; // This variable is not directly used to control logic
-const maxGuessAttempts = 5;
-const revealPercentages = [20, 40, 60, 80, 100]; // This array is not used in the current version
-let ImageURLStart;
-let ImageURLEnd = '.png';
-let guessedImageUrls = []; // Array to store URLs of previously guessed images
-let shareableResultsHistory = []; // Array to store shareable tick/cross results
-
-/**
- * Starts a new game.
- * Resets game state, fetches car make and model from Cloudinary,
- * and loads the initial cropped image.
- */
-async function startNewGame() {
-  uniqueCode = document.getElementById('uniqueCode').value;
-  currentGuessAttempts = 1;
-  // Clear previous results and enable input fields/button
-  resultText.textContent = "";
-  guessMake.disabled = false;
-  guessMake.value = "";
-  guessModel.disabled = false;
-  guessModel.value = "";
-  guessButton.disabled = false;
-  getHintButton.disabled = false; // Enable hint button for a new game
-  hintText.textContent = ""; // Clear any previous hint
-
-  // Hide shareable results and its title at the start of a new game
-  shareableResultsContainer.style.display = 'none'; // Use style.display for direct control
-  shareableResultsTitle.style.display = 'none';
-
-  // Show guess input and buttons
-  guessInputContainer.style.display = 'flex'; // Show the container for guess inputs
-  guessButton.style.display = 'block';
-  getHintButton.style.display = 'block';
-  document.getElementById("hintContainer").style.display = 'block'; // Ensure hint container is also shown
+<!-- Username Modal -->
+<div id="usernameModal" class="flex flex-col items-center justify-center">
+    <div class="modal-content">
+        <h2>Welcome to Ciardle!</h2>
+        <p>Please enter your username:</p>
+        <input type="text" id="usernameInput" placeholder="Your Username">
+        <button onclick="saveUsername()" class="btn-primary">Save Username</button>
+    </div>
+</div>
 
 
-  // Clear the answer table
-  const answerTableBody = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
-  answerTableBody.innerHTML = '';
+<script type="module">
+  // Firebase imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp, getDocs, where, doc, setDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-  // Clear guessed images
-  guessedImageUrls = [];
-  displayGuessedImages(); // Update the display
 
-  // Clear shareable results
-  shareableResultsHistory = [];
-  updateShareableResults(); // Update the shareable results textarea
+  // Firebase initialization and authentication
+  // For standalone use, replace the placeholders below with your actual Firebase project details.
+  // YOU MUST GET THESE FROM YOUR FIREBASE PROJECT SETTINGS.
+  const YOUR_FIREBASE_API_KEY = "AIzaSyCDK-wstUl18b3oPIez4gnBrDj9Iaok4Q4";
+  const YOUR_FIREBASE_AUTH_DOMAIN = "ciardle-41acf.firebaseapp.com";
+  const YOUR_FIREBASE_PROJECT_ID = "ciardle-41acf";
+  const YOUR_FIREBASE_STORAGE_BUCKET = "ciardle-41acf.firebasestorage.app";
+  const YOUR_FIREBASE_MESSAGING_SENDER_ID = "584839686191";
+  const YOUR_FIREBASE_APP_ID = "1:584839686191:web:e1469618d1edc5efdbfeda";
+  const YOUR_FIREBASE_MEASUREMENT_ID = "G-NJ3HNY5J14"; // Added measurementId
 
-  // Fetch car make and model from Cloudinary text file
-  try {
-    await getInfoFromCloudinaryTextFile();
-    console.log('Make:', CarMake, ', Model:', CarModel);
-  } catch (error) {
-    console.error('Text file download error:', error);
-    resultText.textContent = "Error loading car data. Please check the unique code or ensure the file exists on Cloudinary.";
-    // Disable game interaction if data loading fails
-    guessMake.disabled = true;
-    guessModel.disabled = true;
-    guessButton.disabled = true;
-    getHintButton.disabled = true;
-    return;
+
+  const appId = typeof __app_id !== 'undefined' ? __app_id : YOUR_FIREBASE_PROJECT_ID;
+  const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+    apiKey: YOUR_FIREBASE_API_KEY,
+    authDomain: YOUR_FIREBASE_AUTH_DOMAIN,
+    projectId: YOUR_FIREBASE_PROJECT_ID,
+    storageBucket: YOUR_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: YOUR_FIREBASE_MESSAGING_SENDER_ID,
+    appId: YOUR_FIREBASE_APP_ID,
+    measurementId: YOUR_FIREBASE_MEASUREMENT_ID // Added for standalone
+  };
+
+
+  let app;
+  let db;
+  let auth;
+  let userId = 'anonymous'; // Default userId
+
+  // Global variables from existing code
+  let carImage = document.getElementById("carImage");
+  let resultText = document.getElementById("resultText");
+  let guessMake = document.getElementById("guessMake");
+  let guessModel = document.getElementById("guessModel");
+  let guessButton = document.getElementById("guessButton");
+  let goButton = document.getElementById("goButton");
+  let getHintButton = document.getElementById("getHintButton");
+  let hintText = document.getElementById("hintText");
+  let imageOverlay = document.getElementById("imageOverlay");
+  let largeGuessedImage = document.getElementById("largeGuessedImage");
+  let shareableResultsContainer = document.getElementById("shareableResultsContainer");
+  let shareableResultsTitle = document.getElementById("shareableResultsTitle");
+  let guessInputContainer = document.getElementById("guessInputContainer");
+  // Removed submitScoreButton as it's no longer needed in HTML
+  let leaderboardContainer = document.getElementById("leaderboardContainer"); // New: Leaderboard container
+  let leaderboardTitle = document.getElementById("leaderboardTitle"); // New: Leaderboard title
+  let welcomeMessage = document.getElementById("welcomeMessage"); // Re-added welcomeMessage element reference
+
+
+  let cars = []; // Not used in current version
+  let currentCar; // Not used in current version
+  let CarMake, CarModel;
+  let currentGuessAttempts;
+  let uniqueCode;
+  const maxGuessAttempts = 5;
+  let ImageURLStart;
+  let ImageURLEnd = '.png';
+  let guessedImageUrls = [];
+  let shareableResultsHistory = [];
+
+  // User-specific variables
+  let username = localStorage.getItem('ciardleUsername') || '';
+  let userInitialized = false; // Flag to ensure username is set before proceeding
+  let gameWasCorrectlyGuessed = false; // New: Flag to track if the current game was won
+
+
+  /**
+   * Initializes Firebase and authenticates the user.
+   * Checks for existing username or prompts for a new one.
+   */
+  async function initializeUserAndFirebase() {
+      console.log("Initializing Firebase...");
+      try {
+          app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          auth = getAuth(app);
+
+          // Authenticate user
+          if (typeof __initial_auth_token !== 'undefined') {
+              await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+              await signInAnonymously(auth);
+          }
+
+          onAuthStateChanged(auth, (user) => {
+              if (user) {
+                  userId = user.uid;
+                  console.log("Firebase user authenticated:", userId);
+                  // Check for username after Firebase is ready
+                  if (!username) {
+                      showUsernameModal();
+                  } else {
+                      userInitialized = true;
+                      welcomeMessage.textContent = `Welcome, ${username}!`; // Reinstated welcome message functionality
+                      document.getElementById('usernameModal').classList.remove('visible'); // Hide if already set
+                  }
+                  // Load leaderboard once user is authenticated
+                  loadLeaderboard();
+              } else {
+                  console.log("No Firebase user is signed in.");
+                  // Fallback for userId if authentication fails or user signs out
+                  userId = crypto.randomUUID(); // Generate a random ID for anonymous use
+                  userInitialized = true; // Still allow game to proceed
+                  welcomeMessage.textContent = `Welcome, Anonymous Player!`; // Reinstated welcome message functionality
+                  loadLeaderboard(); // Attempt to load leaderboard even if anonymous
+              }
+          });
+      } catch (error) {
+          console.error("Error initializing Firebase or authenticating:", error);
+          let errorMessage = "Error initializing game services.";
+          if (error.code) { // FirebaseError codes
+              if (error.code === 'auth/operation-not-allowed') {
+                  errorMessage += " Firebase Authentication (Anonymous) might not be enabled. Check Firebase Console.";
+              } else if (error.code === 'app/invalid-api-key' || error.code === 'app/invalid-credentials') {
+                  errorMessage += " Firebase config (API Key, Project ID) might be incorrect.";
+              } else if (error.code.startsWith('firestore/')) {
+                   errorMessage += " Firestore might not be set up or security rules are incorrect/not published.";
+              }
+          }
+          resultText.textContent = `${errorMessage} Please try again.`;
+          welcomeMessage.textContent = `Welcome! (Offline Mode) - ${errorMessage}`; // More detailed message
+          userInitialized = true; // Still allow basic game loop if Firebase fails
+      }
   }
 
-  // Construct the base image URL
-  ImageURLStart = `https://res.cloudinary.com/nickrobberts/image/upload/ciardleImage${uniqueCode}`;
+  /**
+   * Shows the username input modal.
+   */
+  function showUsernameModal() {
+      const modal = document.getElementById('usernameModal');
+      const usernameInput = document.getElementById('usernameInput');
+      usernameInput.value = username; // Pre-fill if exists
+      modal.classList.add('visible');
+  }
 
-  // Load the initial cropped image (first reveal stage)
-  carImage.src = ImageURLStart + '1' + ImageURLEnd;
-}
+  /**
+   * Saves the username to local storage and hides the modal.
+   */
+  function saveUsername() {
+      const usernameInput = document.getElementById('usernameInput');
+      const newUsername = usernameInput.value.trim();
+      if (newUsername) {
+          localStorage.setItem('ciardleUsername', newUsername);
+          username = newUsername;
+          userInitialized = true;
+          welcomeMessage.textContent = `Welcome, ${username}!`; // Reinstated welcome message functionality
+          document.getElementById('usernameModal').classList.remove('visible');
+      } else {
+          // You could add a more user-friendly error message here
+          console.warn("Username cannot be empty.");
+          usernameInput.placeholder = "Please enter a valid username!";
+      }
+  }
 
-/**
- * Fetches car make and model from a Cloudinary text file.
- * @returns {Promise<Object>} A promise that resolves with an object containing string1 (Make) and string2 (Model).
- */
-function getInfoFromCloudinaryTextFile() {
-  const cloudName = 'nickrobberts';
-  const publicId = 'ciardleText' + uniqueCode;
-  // Cloudinary raw file URL format
-  const downloadUrl = `https://res.cloudinary.com/${cloudName}/raw/upload/${publicId}`;
+  /**
+   * Starts a new game.
+   * Resets game state, fetches car make and model from Cloudinary,
+   * and loads the initial cropped image.
+   */
+  async function startNewGame() {
+    if (!userInitialized) {
+        // Wait for user initialization if not ready
+        await new Promise(resolve => {
+            const checkUserInit = setInterval(() => {
+                if (userInitialized) {
+                    clearInterval(checkUserInit);
+                    resolve();
+                }
+            }, 100);
+        });
+    }
 
-  return new Promise(async (resolve, reject) => {
-    if (!cloudName || !publicId) {
-      reject(new Error('Cloud name and public ID are required.'));
+    uniqueCode = document.getElementById('uniqueCode').value;
+    currentGuessAttempts = 1;
+    gameWasCorrectlyGuessed = false; // Reset game win flag for new game
+
+    // Clear previous results and enable input fields/button
+    resultText.textContent = "";
+    guessMake.disabled = false;
+    guessMake.value = "";
+    guessModel.disabled = false;
+    guessModel.value = "";
+    guessButton.disabled = false;
+    getHintButton.disabled = false; // Enable hint button for a new game
+    hintText.textContent = ""; // Clear any previous hint
+
+    // Hide shareable results and its title at the start of a new game
+    shareableResultsContainer.style.display = 'none'; // Use style.display for direct control
+    shareableResultsTitle.style.display = 'none';
+    // submitScoreButton is now gone from HTML, no need to hide
+
+    // Show guess input and buttons
+    guessInputContainer.style.display = 'flex'; // Show the container for guess inputs
+    guessButton.style.display = 'block';
+    getHintButton.style.display = 'block';
+    document.getElementById("hintContainer").style.display = 'block'; // Ensure hint container is also shown
+
+
+    // Clear the answer table
+    const answerTableBody = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
+    answerTableBody.innerHTML = '';
+
+    // Clear guessed images
+    guessedImageUrls = [];
+    displayGuessedImages(); // Update the display
+
+    // Clear shareable results
+    shareableResultsHistory = [];
+    updateShareableResults(); // Update the shareable results textarea
+
+    // Fetch car make and model from Cloudinary text file
+    try {
+      await getInfoFromCloudinaryTextFile();
+      console.log('Make:', CarMake, ', Model:', CarModel);
+    } catch (error) {
+      console.error('Text file download error:', error);
+      resultText.textContent = "Error loading car data. Please check the unique code or ensure the file exists on Cloudinary.";
+      // Disable game interaction if data loading fails
+      guessMake.disabled = true;
+      guessModel.disabled = true;
+      guessButton.disabled = true;
+      getHintButton.disabled = true;
       return;
     }
 
-    try {
-      const response = await fetch(downloadUrl);
+    // Construct the base image URL
+    ImageURLStart = `https://res.cloudinary.com/nickrobberts/image/upload/ciardleImage${uniqueCode}`;
 
-      if (!response.ok) {
-        reject(new Error(`Failed to download file: ${response.statusText}. Check if the unique code is correct or if the file exists.`));
+    // Load the initial cropped image (first reveal stage)
+    carImage.src = ImageURLStart + '1' + ImageURLEnd;
+  }
+
+  /**
+   * Fetches car make and model from a Cloudinary text file.
+   * @returns {Promise<Object>} A promise that resolves with an object containing string1 (Make) and string2 (Model).
+   */
+  function getInfoFromCloudinaryTextFile() {
+    const cloudName = 'nickrobberts';
+    const publicId = 'ciardleText' + uniqueCode;
+    // Cloudinary raw file URL format
+    const downloadUrl = `https://res.cloudinary.com/${cloudName}/raw/upload/${publicId}`;
+
+    return new Promise(async (resolve, reject) => {
+      if (!cloudName || !publicId) {
+        reject(new Error('Cloud name and public ID are required.'));
         return;
       }
 
-      const text = await response.text();
-      const strings = text.split('\n').map(s => s.trim()); // Split by newline and trim whitespace
+      try {
+        const response = await fetch(downloadUrl);
 
-      if (strings.length >= 2) {
-        CarMake = strings[0];
-        CarModel = strings[1];
-        resolve({ string1: strings[0], string2: strings[1] });
+        if (!response.ok) {
+          reject(new Error(`Failed to download file: ${response.statusText}. Check if the unique code is correct or if the file exists.`));
+          return;
+        }
+
+        const text = await response.text();
+        const strings = text.split('\n').map(s => s.trim()); // Split by newline and trim whitespace
+
+        if (strings.length >= 2) {
+          CarMake = strings[0];
+          CarModel = strings[1];
+          resolve({ string1: strings[0], string2: strings[1] });
+        } else {
+          reject(new Error('File does not contain at least two strings (Make and Model).'));
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * Ends the game by disabling inputs/buttons and showing shareable results.
+   * Also triggers automatic score submission.
+   * @param {boolean} correctlyGuessed - True if the car was guessed correctly, false otherwise.
+   */
+  function endGame(correctlyGuessed) {
+    gameWasCorrectlyGuessed = correctlyGuessed; // Set the flag
+    guessMake.disabled = true;
+    guessModel.disabled = true;
+    guessButton.disabled = true;
+    getHintButton.disabled = true; // Disable hint button
+    guessInputContainer.style.display = 'none'; // Hide the container for guess inputs
+    guessButton.style.display = 'none'; // Hide the guess button
+    document.getElementById("hintContainer").style.display = 'none'; // Hide the hint container
+    shareableResultsContainer.style.display = 'block'; // Show shareable results
+    shareableResultsTitle.style.display = 'block'; // Show shareable results title
+    // submitScoreButton is removed, so no need to manage its display here
+
+    // Automatically submit the score
+    submitScore();
+  }
+
+  /**
+   * Checks the user's guess against the actual car make and model.
+   * Updates the game state, image, and displays results.
+   */
+  function checkGuess() {
+    const userGuessMake = guessMake.value;
+    const userGuessModel = guessModel.value;
+
+    // Add current image to guessed images before checking
+    // Only add if it's not already the last one (to avoid duplicates from repeated guesses without image change)
+    if (carImage.src && guessedImageUrls[guessedImageUrls.length - 1] !== carImage.src) {
+      guessedImageUrls.push(carImage.src);
+      displayGuessedImages();
+    }
+
+    const userGuessMakeCorrect = approximateMatch(userGuessMake, CarMake);
+    const userGuessModelCorrect = approximateMatch(userGuessModel, CarModel);
+
+    // Determine the HTML for the tick/cross icons for display on the page
+    const makeIconHtml = userGuessMakeCorrect ? '<span class="tick">&#10003;</span>' : '<span class="cross">&#10007;</span>';
+    const modelIconHtml = userGuessModelCorrect ? '<span class="tick">&#10003;</span>' : '<span class="cross">&#10007;</span>';
+
+    // Add the guess to the answer table with styled icons
+    addAnswerRow(
+      userGuessMake + ' ' + makeIconHtml,
+      userGuessModel + ' ' + modelIconHtml
+    );
+
+    resultText.innerHTML = `Make: ${makeIconHtml}, Model: ${modelIconHtml}`;
+
+    // Determine the emojis for shareable results
+    const makeEmoji = userGuessMakeCorrect ? '🟩' : '🟥';
+    const modelEmoji = userGuessModelCorrect ? '🟩' : '🟥';
+
+    // Add to shareable results history (using emojis for copy-paste graphical appeal)
+    shareableResultsHistory.push(`Attempt ${currentGuessAttempts}: Make ${makeEmoji}, Model ${modelEmoji}`);
+    updateShareableResults();
+
+    if (userGuessMakeCorrect && userGuessModelCorrect) {
+      resultText.textContent = `Correct! The car was a ${CarMake} ${CarModel}.`;
+      carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
+      endGame(true); // Pass true because the guess was correct
+    } else {
+      currentGuessAttempts++;
+      if (currentGuessAttempts <= maxGuessAttempts) {
+        // Load the next cropped image based on attempts
+        carImage.src = ImageURLStart + currentGuessAttempts + ImageURLEnd;
       } else {
-        reject(new Error('File does not contain at least two strings (Make and Model).'));
+        resultText.textContent = `Out of guesses! The answer was ${CarMake} ${CarModel}.`;
+        carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
+        endGame(false); // Pass false because out of guesses
+      }
+    }
+  }
+
+  /**
+   * Adds a new row to the answer table with the make and model strings.
+   * @param {string} makeHtml - The make string (can contain HTML for icons) to display.
+   * @param {string} modelHtml - The model string (can contain HTML for icons) to display.
+   */
+  function addAnswerRow(makeHtml, modelHtml) {
+    const tableBody = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
+    const newRow = tableBody.insertRow();
+    const cell1 = newRow.insertCell(0);
+    const cell2 = newRow.insertCell(1);
+
+    cell1.innerHTML = makeHtml; // Use innerHTML to render the span tags
+    cell2.innerHTML = modelHtml; // Use innerHTML to render the span tags
+  }
+
+  /**
+   * Displays the images stored in `guessedImageUrls` in the `guessedImagesContainer`.
+   * Each image is given a click handler to open the large view.
+   */
+  function displayGuessedImages() {
+    const container = document.getElementById("guessedImagesContainer");
+    container.innerHTML = ''; // Clear previous images
+
+    guessedImageUrls.forEach(url => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Guessed Car Image';
+      img.classList.add('guessed-image-item');
+      // Attach click listener to show large image
+      img.onclick = () => showLargeImage(url);
+      container.appendChild(img);
+    });
+  }
+
+  /**
+   * Shows a large version of the image in an overlay.
+   * @param {string} imageUrl - The URL of the image to display.
+   */
+  function showLargeImage(imageUrl) {
+    largeGuessedImage.src = imageUrl;
+    imageOverlay.classList.add('visible'); // Use 'visible' class for transition
+  }
+
+  /**
+   * Hides the large image overlay.
+   */
+  function hideLargeImage() {
+    imageOverlay.classList.remove('visible'); // Use 'visible' class for transition
+  }
+
+
+  /**
+   * Updates the content of the shareable results textarea.
+   */
+  function updateShareableResults() {
+    const textarea = document.getElementById("shareableResultsTextarea");
+    // Construct the game URL with the current uniqueCode
+    const gameUrl = `https://nrobbert.github.io/Ciardle/ciardle.html?code=${uniqueCode || 'test'}`; // Default to 'test' if uniqueCode is not set
+
+    // Add a header and footer for better context when copied
+    const header = `Ciardle Results (Code: ${uniqueCode || 'N/A'})\n`;
+    const footer = `\nPlay Ciardle at ${gameUrl}`;
+    textarea.value = header + shareableResultsHistory.join('\n') + footer;
+  }
+
+  /**
+   * Copies the content of the shareable results textarea to the clipboard.
+   */
+  function copyShareableResults() {
+    const textarea = document.getElementById("shareableResultsTextarea");
+    textarea.select();
+    textarea.setSelectionRange(0, 99999); // For mobile devices
+
+    try {
+      document.execCommand('copy');
+      const copyMessage = document.getElementById("copyMessage");
+      copyMessage.classList.remove('hidden');
+      setTimeout(() => {
+        copyMessage.classList.add('hidden');
+      }, 2000); // Hide message after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      // Fallback for browsers where execCommand might not work or is deprecated
+      // In a real app, you might provide a manual copy instruction or use navigator.clipboard.writeText (requires secure context)
+    }
+  }
+
+  /**
+   * Calls the Gemini API to get a subtle hint about the car.
+   */
+  async function getCarHint() {
+    if (!CarMake || !CarModel) {
+      hintText.textContent = "Please start a game first to get a hint.";
+      return;
+    }
+
+    // Increment guess attempt for taking a hint
+    currentGuessAttempts++;
+
+    // Add current image to guessed images before checking
+    if (carImage.src && guessedImageUrls[guessedImageUrls.length - 1] !== carImage.src) {
+      guessedImageUrls.push(carImage.src);
+      displayGuessedImages();
+    }
+
+    // Add hint entry to the answer table
+    addAnswerRow('Hint Taken 💡', 'Hint Taken 💡'); // Display hint taken in both columns
+
+    // Add hint to shareable results history
+    shareableResultsHistory.push(`Attempt ${currentGuessAttempts -1}: Hint Taken 💡`); // Use currentGuessAttempts - 1 for the actual attempt number for the hint
+    updateShareableResults();
+
+    // Check if game ends after taking a hint
+    if (currentGuessAttempts > maxGuessAttempts) {
+      resultText.textContent = `Out of guesses due to hints! The answer was ${CarMake} ${CarModel}.`;
+      carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
+      endGame(false); // Pass false because out of guesses
+      return; // Stop further execution if game ends
+    }
+
+    hintText.textContent = "Generating hint... please wait.";
+    getHintButton.disabled = true; // Disable button while generating
+
+    // Load the next cropped image based on attempts after taking a hint
+    if (currentGuessAttempts <= maxGuessAttempts) {
+      carImage.src = ImageURLStart + currentGuessAttempts + ImageURLEnd;
+    }
+
+
+    let chatHistory = [];
+    let prompt = "";
+
+    // Randomly choose hint format
+    const hintType = Math.random();
+    if (hintType < 0.3) { // 30% chance for Haiku
+      prompt = `The car is a ${CarMake} ${CarModel}. Provide a cryptic hint about the car's make or model in the form of a haiku (5-7-5 syllables). Do not explicitly state the make or model.`;
+    } else if (hintType < 0.6) { // 30% chance for Limerick
+      prompt = `The car is a ${CarMake} ${CarModel}. Provide a cryptic hint about the car's make or model in the form of a limerick. Do not explicitly state the make or model. Make it humorous if possible.`;
+    } else { // 40% chance for a standard cryptic hint
+      prompt = `The car is a ${CarMake} ${CarModel}. Provide a very cryptic, subtle, less obvious, and riddling hint about the car's make or model without explicitly stating either. Make it concise and helpful for a guessing game. For example, if it's a Ford Mustang, you could say "This car is often associated with American muscle." or "Its logo features an animal known for speed."`;
+    }
+
+    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+    const payload = { contents: chatHistory };
+    // SECURITY NOTE: Hardcoding an API key in client-side code is a security risk.
+    // In a production environment, this key should be stored securely on a server
+    // and accessed via a backend endpoint to prevent unauthorized use.
+    const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Canvas will inject this. For local testing, put your key here.
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        // Attempt to read error message from response body
+        const errorData = await response.json();
+        const errorMessage = errorData.error ? errorData.error.message : response.statusText;
+        throw new Error(`API call failed with status: ${response.status} - ${errorMessage}`);
+      }
+
+      const result = await response.json();
+      if (result.candidates && result.candidates.length > 0 &&
+          result.candidates[0].content && result.candidates[0].content.parts &&
+          result.candidates[0].content.parts.length > 0) {
+        const generatedHint = result.candidates[0].content.parts[0].text;
+        hintText.textContent = `Hint: ${generatedHint}`;
+      } else {
+        hintText.textContent = "Could not generate a hint. Please try again.";
+        console.error("Gemini API response structure unexpected:", result);
       }
     } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-/**
- * Ends the game by disabling inputs/buttons and showing shareable results.
- */
-function endGame() {
-  guessMake.disabled = true;
-  guessModel.disabled = true;
-  guessButton.disabled = true;
-  getHintButton.disabled = true; // Disable hint button
-  guessInputContainer.style.display = 'none'; // Hide the container for guess inputs
-  guessButton.style.display = 'none'; // Hide the guess button
-  document.getElementById("hintContainer").style.display = 'none'; // Hide the hint container
-  shareableResultsContainer.style.display = 'block'; // Show shareable results
-  shareableResultsTitle.style.display = 'block'; // Show shareable results title
-}
-
-/**
- * Checks the user's guess against the actual car make and model.
- * Updates the game state, image, and displays results.
- */
-function checkGuess() {
-  const userGuessMake = guessMake.value;
-  const userGuessModel = guessModel.value;
-
-  // Add current image to guessed images before checking
-  // Only add if it's not already the last one (to avoid duplicates from repeated guesses without image change)
-  if (carImage.src && guessedImageUrls[guessedImageUrls.length - 1] !== carImage.src) {
-    guessedImageUrls.push(carImage.src);
-    displayGuessedImages();
-  }
-
-  const userGuessMakeCorrect = approximateMatch(userGuessMake, CarMake);
-  const userGuessModelCorrect = approximateMatch(userGuessModel, CarModel);
-
-  // Determine the HTML for the tick/cross icons for display on the page
-  const makeIconHtml = userGuessMakeCorrect ? '<span class="tick">&#10003;</span>' : '<span class="cross">&#10007;</span>';
-  const modelIconHtml = userGuessModelCorrect ? '<span class="tick">&#10003;</span>' : '<span class="cross">&#10007;</span>';
-
-  // Add the guess to the answer table with styled icons
-  addAnswerRow(
-    userGuessMake + ' ' + makeIconHtml,
-    userGuessModel + ' ' + modelIconHtml
-  );
-
-  resultText.innerHTML = `Make: ${makeIconHtml}, Model: ${modelIconHtml}`;
-
-  // Determine the emojis for shareable results
-  const makeEmoji = userGuessMakeCorrect ? '🟩' : '🟥';
-  const modelEmoji = userGuessModelCorrect ? '🟩' : '🟥';
-
-  // Add to shareable results history (using emojis for copy-paste graphical appeal)
-  shareableResultsHistory.push(`Attempt ${currentGuessAttempts}: Make ${makeEmoji}, Model ${modelEmoji}`);
-  updateShareableResults();
-
-  if (userGuessMakeCorrect && userGuessModelCorrect) {
-    resultText.textContent = `Correct! The car was a ${CarMake} ${CarModel}.`;
-    carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
-    endGame(); // End the game
-  } else {
-    currentGuessAttempts++;
-    if (currentGuessAttempts <= maxGuessAttempts) {
-      // Load the next cropped image based on attempts
-      carImage.src = ImageURLStart + currentGuessAttempts + ImageURLEnd;
-    } else {
-      resultText.textContent = `Out of guesses! The answer was ${CarMake} ${CarModel}.`;
-      carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
-      endGame(); // End the game
+      hintText.textContent = `Error generating hint: ${error.message}. Please check console for details.`;
+      console.error("Error calling Gemini API:", error);
+    } finally {
+      getHintButton.disabled = false; // Re-enable button after response
     }
   }
-}
-
-/**
- * Adds a new row to the answer table with the make and model strings.
- * @param {string} makeHtml - The make string (can contain HTML for icons) to display.
- * @param {string} modelHtml - The model string (can contain HTML for icons) to display.
- */
-function addAnswerRow(makeHtml, modelHtml) {
-  const tableBody = document.getElementById("answerTable").getElementsByTagName('tbody')[0];
-  const newRow = tableBody.insertRow();
-  const cell1 = newRow.insertCell(0);
-  const cell2 = newRow.insertCell(1);
-
-  cell1.innerHTML = makeHtml; // Use innerHTML to render the span tags
-  cell2.innerHTML = modelHtml; // Use innerHTML to render the span tags
-}
-
-/**
- * Displays the images stored in `guessedImageUrls` in the `guessedImagesContainer`.
- * Each image is given a click handler to open the large view.
- */
-function displayGuessedImages() {
-  const container = document.getElementById("guessedImagesContainer");
-  container.innerHTML = ''; // Clear previous images
-
-  guessedImageUrls.forEach(url => {
-    const img = document.createElement('img');
-    img.src = url;
-    img.alt = 'Guessed Car Image';
-    img.classList.add('guessed-image-item');
-    // Attach click listener to show large image
-    img.onclick = () => showLargeImage(url);
-    container.appendChild(img);
-  });
-}
-
-/**
- * Shows a large version of the image in an overlay.
- * @param {string} imageUrl - The URL of the image to display.
- */
-function showLargeImage(imageUrl) {
-  largeGuessedImage.src = imageUrl;
-  imageOverlay.classList.add('visible'); // Use 'visible' class for transition
-}
-
-/**
- * Hides the large image overlay.
- */
-function hideLargeImage() {
-  imageOverlay.classList.remove('visible'); // Use 'visible' class for transition
-}
 
 
-/**
- * Updates the content of the shareable results textarea.
- */
-function updateShareableResults() {
-  const textarea = document.getElementById("shareableResultsTextarea");
-  // Construct the game URL with the current uniqueCode
-  const gameUrl = `https://nrobbert.github.io/Ciardle/ciardle.html?code=${uniqueCode || 'test'}`; // Default to 'test' if uniqueCode is not set
+  /**
+   * Checks for approximate match between two strings using Levenshtein distance.
+   * @param {string} str1 - The first string.
+   * @param {string} str2 - The second string.
+   * @param {number} [tolerance=0.8] - The similarity threshold (0 to 1).
+   * @returns {boolean} True if the strings are approximately similar, false otherwise.
+   */
+  function approximateMatch(str1, str2, tolerance = 0.8) {
+    // Normalize strings: lowercase and remove non-alphanumeric characters
+    const normalize = (str) =>
+      str.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-  // Add a header and footer for better context when copied
-  const header = `Ciardle Results (Code: ${uniqueCode || 'N/A'})\n`;
-  const footer = `\nPlay Ciardle at ${gameUrl}`;
-  textarea.value = header + shareableResultsHistory.join('\n') + footer;
-}
+    const normalizedStr1 = normalize(str1);
+    const normalizedStr2 = normalize(str2);
 
-/**
- * Copies the content of the shareable results textarea to the clipboard.
- */
-function copyShareableResults() {
-  const textarea = document.getElementById("shareableResultsTextarea");
-  textarea.select();
-  textarea.setSelectionRange(0, 99999); // For mobile devices
-
-  try {
-    document.execCommand('copy');
-    const copyMessage = document.getElementById("copyMessage");
-    copyMessage.classList.remove('hidden');
-    setTimeout(() => {
-      copyMessage.classList.add('hidden');
-    }, 2000); // Hide message after 2 seconds
-  } catch (err) {
-    console.error('Failed to copy text: ', err);
-    // Fallback for browsers where execCommand might not work or is deprecated
-    // In a real app, you might provide a manual copy instruction or use navigator.clipboard.writeText (requires secure context)
-  }
-}
-
-/**
- * Calls the Gemini API to get a subtle hint about the car.
- */
-async function getCarHint() {
-  if (!CarMake || !CarModel) {
-    hintText.textContent = "Please start a game first to get a hint.";
-    return;
-  }
-
-  // Increment guess attempt for taking a hint
-  currentGuessAttempts++;
-
-  // Add current image to guessed images before checking
-  if (carImage.src && guessedImageUrls[guessedImageUrls.length - 1] !== carImage.src) {
-    guessedImageUrls.push(carImage.src);
-    displayGuessedImages();
-  }
-
-  // Add hint entry to the answer table
-  addAnswerRow('Hint Taken 💡', 'Hint Taken 💡'); // Display hint taken in both columns
-
-  // Add hint to shareable results history
-  shareableResultsHistory.push(`Attempt ${currentGuessAttempts -1}: Hint Taken 💡`); // Use currentGuessAttempts - 1 for the actual attempt number for the hint
-  updateShareableResults();
-
-  // Check if game ends after taking a hint
-  if (currentGuessAttempts > maxGuessAttempts) {
-    resultText.textContent = `Out of guesses due to hints! The answer was ${CarMake} ${CarModel}.`;
-    carImage.src = ImageURLStart + ImageURLEnd; // Show the full image
-    endGame(); // End the game
-    return; // Stop further execution if game ends
-  }
-
-  hintText.textContent = "Generating hint... please wait.";
-  getHintButton.disabled = true; // Disable button while generating
-
-  // Load the next cropped image based on attempts after taking a hint
-  if (currentGuessAttempts <= maxGuessAttempts) {
-    carImage.src = ImageURLStart + currentGuessAttempts + ImageURLEnd;
-  }
-
-
-  let chatHistory = [];
-  let prompt = "";
-
-  // Randomly choose hint format
-  const hintType = Math.random();
-  if (hintType < 0.3) { // 30% chance for Haiku
-    prompt = `The car is a ${CarMake} ${CarModel}. Provide a cryptic hint about the car's make or model in the form of a haiku (5-7-5 syllables). Do not explicitly state the make or model.`;
-  } else if (hintType < 0.6) { // 30% chance for Limerick
-    prompt = `The car is a ${CarMake} ${CarModel}. Provide a cryptic hint about the car's make or model in the form of a limerick. Do not explicitly state the make or model. Make it humorous if possible.`;
-  } else { // 40% chance for a standard cryptic hint
-    prompt = `The car is a ${CarMake} ${CarModel}. Provide a very cryptic, subtle, less obvious, and riddling hint about the car's make or model without explicitly stating either. Make it concise and helpful for a guessing game. For example, if it's a Ford Mustang, you could say "This car is often associated with American muscle." or "Its logo features an animal known for speed."`;
-  }
-
-  chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-  const payload = { contents: chatHistory };
-  // SECURITY NOTE: Hardcoding an API key in client-side code is a security risk.
-  // In a production environment, this key should be stored securely on a server
-  // and accessed via a backend endpoint to prevent unauthorized use.
-  const apiKey = "AIzaSyBmAjWtkH6R9It2PaEydaoS8oj8-8P8TbY"; // Your Gemini API Key
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      // Attempt to read error message from response body
-      const errorData = await response.json();
-      const errorMessage = errorData.error ? errorData.error.message : response.statusText;
-      throw new Error(`API call failed with status: ${response.status} - ${errorMessage}`);
+    if (!normalizedStr1 || !normalizedStr2) {
+      return normalizedStr1 === normalizedStr2; // Handle empty string cases
     }
 
-    const result = await response.json();
-    if (result.candidates && result.candidates.length > 0 &&
-        result.candidates[0].content && result.candidates[0].content.parts &&
-        result.candidates[0].content.parts.length > 0) {
-      const generatedHint = result.candidates[0].content.parts[0].text;
-      hintText.textContent = `Hint: ${generatedHint}`;
-    } else {
-      hintText.textContent = "Could not generate a hint. Please try again.";
-      console.error("Gemini API response structure unexpected:", result);
-    }
-  } catch (error) {
-    hintText.textContent = `Error generating hint: ${error.message}. Please check console for details.`;
-    console.error("Error calling Gemini API:", error);
-  } finally {
-    getHintButton.disabled = false; // Re-enable button after response
-  }
-}
+    // Calculate Levenshtein distance (edit distance)
+    const levenshteinDistance = (s1, s2) => {
+      const matrix = Array(s1.length + 1)
+        .fill(null)
+        .map(() => Array(s2.length + 1).fill(null));
 
-
-/**
- * Checks for approximate match between two strings using Levenshtein distance.
- * @param {string} str1 - The first string.
- * @param {string} str2 - The second string.
- * @param {number} [tolerance=0.8] - The similarity threshold (0 to 1).
- * @returns {boolean} True if the strings are approximately similar, false otherwise.
- */
-function approximateMatch(str1, str2, tolerance = 0.8) {
-  // Normalize strings: lowercase and remove non-alphanumeric characters
-  const normalize = (str) =>
-    str.toLowerCase().replace(/[^a-z0-9]/g, "");
-
-  const normalizedStr1 = normalize(str1);
-  const normalizedStr2 = normalize(str2);
-
-  if (!normalizedStr1 || !normalizedStr2) {
-    return normalizedStr1 === normalizedStr2; // Handle empty string cases
-  }
-
-  // Calculate Levenshtein distance (edit distance)
-  const levenshteinDistance = (s1, s2) => {
-    const matrix = Array(s1.length + 1)
-      .fill(null)
-      .map(() => Array(s2.length + 1).fill(null));
-
-    for (let i = 0; i <= s1.length; i++) {
-      matrix[i][0] = i;
-    }
-    for (let j = 0; j <= s2.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= s1.length; i++) {
-      for (let j = 1; j <= s2.length; j++) {
-        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1, // deletion
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j - 1] + cost // substitution
-        );
+      for (let i = 0; i <= s1.length; i++) {
+        matrix[i][0] = i;
       }
-    }
+      for (let j = 0; j <= s2.length; j++) {
+        matrix[0][j] = j;
+      }
 
-    return matrix[s1.length][s2.length];
-  };
+      for (let i = 1; i <= s1.length; i++) {
+        for (let j = 1; j <= s2.length; j++) {
+          const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1, // deletion
+            matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j - 1] + cost // substitution
+          );
+        }
+      }
 
-  const distance = levenshteinDistance(normalizedStr1, normalizedStr2);
-  const maxLength = Math.max(normalizedStr1.length, normalizedStr2.length);
+      return matrix[s1.length][s2.length];
+    };
 
-  // Calculate similarity
-  const similarity = 1 - distance / maxLength;
-  console.log(`Check: "${str1}", "${str2}": ${similarity} (limit=${tolerance})`);
+    const distance = levenshteinDistance(normalizedStr1, normalizedStr2);
+    const maxLength = Math.max(normalizedStr1.length, normalizedStr2.length);
 
-  return similarity >= tolerance;
-}
+    // Calculate similarity
+    const similarity = 1 - distance / maxLength;
+    console.log(`Check: "${str1}", "${str2}": ${similarity} (limit=${tolerance})`);
 
-// Initial calls to display any existing data (will be empty on first load)
-displayGuessedImages();
-updateShareableResults();
-
-// New: Check for 'code' parameter in URL on page load
-document.addEventListener('DOMContentLoaded', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const codeParam = urlParams.get('code');
-  if (codeParam) {
-    document.getElementById('uniqueCode').value = codeParam;
-    // Programmatically click the "Go!" button
-    document.getElementById('goButton').click();
+    return similarity >= tolerance;
   }
-});
+
+  /**
+   * Submits the current game score to Firestore.
+   */
+  async function submitScore() {
+      if (!db || !userId || !username) {
+          console.error("Firebase not initialized or user not set up.");
+          resultText.textContent = "Cannot submit score: game services not ready.";
+          return;
+      }
+
+      const leaderboardCollectionRef = collection(db, `artifacts/${appId}/public/data/leaderboard`);
+      // It's still valid to check if this specific game session (userId + uniqueCode) was already submitted
+      const userSpecificGameQuery = query(leaderboardCollectionRef, 
+                      where("userId", "==", userId), 
+                      where("uniqueCode", "==", uniqueCode || 'unknown'));
+
+      try {
+          const querySnapshot = await getDocs(userSpecificGameQuery);
+
+          if (!querySnapshot.empty) {
+              // A score for this user and code already exists in the 'leaderboard' (session) collection
+              resultText.textContent += " You have already submitted a score for this game code.";
+              console.log("Game session score not submitted to session collection: Already exists.");
+              // IMPORTANT: Continue to update userStats even if session already exists,
+              // as userStats aggregates totals.
+          } else {
+              // Only add to the 'leaderboard' (session) collection if it doesn't already exist for this user/game.
+              const gameSessionScoreData = {
+                  userId: userId,
+                  username: username,
+                  uniqueCode: uniqueCode || 'unknown',
+                  attempts: currentGuessAttempts,
+                  isCorrectGuess: gameWasCorrectlyGuessed, // Use the global flag set by endGame
+                  timestamp: serverTimestamp()
+              };
+              await addDoc(leaderboardCollectionRef, gameSessionScoreData);
+              console.log("Game session score submitted successfully:", gameSessionScoreData);
+              resultText.textContent += " Score submitted to leaderboard!";
+          }
+
+
+          // Update user statistics - NOW USING USERNAME AS THE DOCUMENT ID for aggregation
+          const userStatsDocRef = doc(db, `artifacts/${appId}/public/data/userStats`, username); 
+          let userStatsUpdateData = {
+              username: username, // Always keep username updated in the document content
+              totalGamesPlayed: increment(1),
+              lastUpdated: serverTimestamp()
+          };
+
+          if (gameWasCorrectlyGuessed) {
+              userStatsUpdateData.totalCorrectGuesses = increment(1);
+              userStatsUpdateData.totalAttemptsForCorrectGuesses = increment(currentGuessAttempts);
+          }
+
+          await setDoc(userStatsDocRef, userStatsUpdateData, { merge: true }); // Use setDoc with merge for upsert
+
+          // After updating, re-fetch the user stats to accurately calculate the average
+          const updatedStatsSnap = await getDoc(userStatsDocRef);
+          if (updatedStatsSnap.exists()) {
+              const stats = updatedStatsSnap.data();
+              const avgAttempts = stats.totalCorrectGuesses > 0 ?
+                                  (stats.totalAttemptsForCorrectGuesses / stats.totalCorrectGuesses) : 0;
+              await setDoc(userStatsDocRef, { averageAttemptsPerCorrectGuess: avgAttempts }, { merge: true });
+              console.log("Average attempts per correct guess updated:", avgAttempts);
+          }
+
+          loadLeaderboard(); // Refresh leaderboard after submission
+      } catch (e) {
+          console.error("Error submitting score or updating user stats to Firestore: ", e);
+          resultText.textContent += " Error submitting score.";
+      }
+  }
+
+  /**
+   * Loads and displays the leaderboard from Firestore, now showing user statistics.
+   */
+  function loadLeaderboard() {
+      if (!db) {
+          console.error("Firestore not initialized.");
+          return;
+      }
+
+      const leaderboardTableBody = document.querySelector("#leaderboardTable tbody");
+      leaderboardTableBody.innerHTML = '<tr><td colspan="5">Loading leaderboard...</td></tr>';
+      leaderboardContainer.style.display = 'block';
+      leaderboardTitle.style.display = 'block';
+
+      try {
+          const userStatsCollectionRef = collection(db, `artifacts/${appId}/public/data/userStats`);
+          // Fetch all user stats, then sort and limit client-side
+          const q = query(userStatsCollectionRef); 
+
+          // Listen for real-time updates
+          onSnapshot(q, (snapshot) => {
+              leaderboardTableBody.innerHTML = ''; // Clear existing
+              if (snapshot.empty) {
+                  leaderboardTableBody.innerHTML = '<tr><td colspan="5">No user statistics yet. Play to get on the board!</td></tr>';
+              } else {
+                  let userStats = [];
+                  snapshot.forEach((doc) => {
+                      userStats.push(doc.data());
+                  });
+
+                  // Calculate percentage success for each user
+                  userStats.forEach(stat => {
+                      const totalGames = stat.totalGamesPlayed || 0;
+                      const correctGuesses = stat.totalCorrectGuesses || 0;
+                      stat.percentageSuccess = totalGames > 0 ? (correctGuesses / totalGames) * 100 : 0;
+                  });
+
+                  // Sort client-side: by percentageSuccess (desc), then totalCorrectGuesses (desc), then averageAttemptsPerCorrectGuess (asc)
+                  userStats.sort((a, b) => {
+                      const successA = a.percentageSuccess || 0;
+                      const successB = b.percentageSuccess || 0;
+                      const correctA = a.totalCorrectGuesses || 0;
+                      const correctB = b.totalCorrectGuesses || 0;
+                      const avgA = a.averageAttemptsPerCorrectGuess || Infinity; 
+                      const avgB = b.averageAttemptsPerCorrectGuess || Infinity;
+
+                      if (successA !== successB) {
+                          return successB - successA; // Higher success percentage first
+                      }
+                      if (correctA !== correctB) {
+                          return correctB - correctA; // Then, more correct guesses
+                      }
+                      return avgA - avgB; // Finally, fewer average attempts
+                  });
+
+                  // Limit to top 10
+                  userStats = userStats.slice(0, 10);
+
+                  let rank = 1;
+                  userStats.forEach((data) => {
+                      const row = leaderboardTableBody.insertRow();
+                      row.insertCell(0).textContent = rank++;
+                      row.insertCell(1).textContent = data.username || 'Anonymous';
+                      row.insertCell(2).textContent = data.percentageSuccess ? data.percentageSuccess.toFixed(2) + '%' : '0.00%';
+                      row.insertCell(3).textContent = data.totalGamesPlayed || 0;
+                      row.insertCell(4).textContent = data.averageAttemptsPerCorrectGuess ? data.averageAttemptsPerCorrectGuess.toFixed(2) : 'N/A';
+                  });
+              }
+          }, (error) => {
+              console.error("Error fetching leaderboard (user stats): ", error);
+              leaderboardTableBody.innerHTML = '<tr><td colspan="5">Error loading leaderboard.</td></tr>';
+          });
+      } catch (e) {
+          console.error("Error setting up leaderboard snapshot (user stats): ", e);
+          leaderboardTableBody.innerHTML = '<tr><td colspan="5">Error loading leaderboard.</td></tr>';
+      }
+  }
+
+  // Initial calls
+  initializeUserAndFirebase(); // Initialize Firebase and user on page load
+  displayGuessedImages();
+  updateShareableResults();
+
+
+  // New: Check for 'code' parameter in URL on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeParam = urlParams.get('code');
+    if (codeParam) {
+      document.getElementById('uniqueCode').value = codeParam;
+      // Programmatically click the "Go!" button
+      document.getElementById('goButton').click();
+    }
+  });
+
+  // Expose functions to global scope for onclick attributes
+  window.startNewGame = startNewGame;
+  window.checkGuess = checkGuess;
+  window.getCarHint = getCarHint;
+  window.showLargeImage = showLargeImage;
+  window.hideLargeImage = hideLargeImage;
+  window.copyShareableResults = copyShareableResults;
+  window.submitScore = submitScore;
+  window.loadLeaderboard = loadLeaderboard;
+  window.saveUsername = saveUsername;
+
 </script>
 
 </body>
