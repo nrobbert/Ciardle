@@ -274,22 +274,30 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: clamp(1rem, 3vw, 2rem); /* Add padding to prevent header/footer overlap */
+        min-height: 0; /* Allow flexbox to shrink properly */
     }
 
     .crop-image-container {
         position: relative;
-        max-width: 100%;
-        max-height: 100%;
+        max-width: calc(100% - 2rem); /* Account for padding */
+        max-height: calc(100% - 2rem); /* Account for padding */
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         touch-action: none;
     }
 
     .crop-source-image {
-        max-width: 100%;
-        max-height: 100%;
+        max-width: 90%; /* Reduce from 100% to give breathing room */
+        max-height: 90%; /* Reduce from 100% to give breathing room */
         object-fit: contain;
         display: block;
-        pointer-events: none;
+        pointer-events: all; /* Allow clicks to start selection */
         user-select: none;
+        cursor: crosshair; /* Indicate clickable for cropping */
     }
 
     .crop-selection-overlay {
@@ -1127,6 +1135,7 @@
     let resizeHandle = null;
     let imageContainer = null;
     let sourceImageElement = null;
+    let selectionStarted = false; // Track whether user has started selection
 
     /**
      * Opens the fullscreen crop modal for the specified image number
@@ -1188,7 +1197,11 @@
             height: selectionHeight
         };
         
-        updateCropSelectionDisplay();
+        // Reset selection state when modal opens
+        selectionStarted = false;
+        
+        // Don't show selection initially - wait for user click
+        hideCropSelectionDisplay();
         setupCropEventListeners();
     }
 
@@ -1203,6 +1216,17 @@
         selectionBox.style.top = cropSelection.y + 'px';
         selectionBox.style.width = cropSelection.width + 'px';
         selectionBox.style.height = cropSelection.height + 'px';
+        selectionBox.style.display = 'block';
+    }
+
+    /**
+     * Hides the crop selection box
+     */
+    function hideCropSelectionDisplay() {
+        const selectionBox = document.getElementById('cropSelectionBox');
+        if (!selectionBox) return;
+        
+        selectionBox.style.display = 'none';
     }
 
     /**
@@ -1213,6 +1237,10 @@
         const handles = document.querySelectorAll('.crop-handle');
         
         if (!selectionBox) return;
+        
+        // Add click/touch listener to image to start selection
+        sourceImageElement.addEventListener('mousedown', startCropSelection);
+        sourceImageElement.addEventListener('touchstart', startCropSelection, { passive: false });
         
         // Selection box drag events
         selectionBox.addEventListener('mousedown', startDragSelection);
@@ -1230,6 +1258,37 @@
         document.addEventListener('mouseup', endCropInteraction);
         document.addEventListener('touchend', endCropInteraction);
         document.addEventListener('touchcancel', endCropInteraction);
+    }
+
+    /**
+     * Starts crop selection when user first clicks on image
+     */
+    function startCropSelection(e) {
+        if (selectionStarted) return; // Already started, let normal interaction continue
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        const imageRect = sourceImageElement.getBoundingClientRect();
+        const mouseX = clientX - imageRect.left;
+        const mouseY = clientY - imageRect.top;
+        
+        // Set selection start position based on click location
+        const selectionWidth = Math.min(200, imageRect.width * 0.4);
+        const selectionHeight = Math.min(150, imageRect.height * 0.4);
+        
+        cropSelection = {
+            x: Math.max(0, Math.min(mouseX - selectionWidth / 2, imageRect.width - selectionWidth)),
+            y: Math.max(0, Math.min(mouseY - selectionHeight / 2, imageRect.height - selectionHeight)),
+            width: selectionWidth,
+            height: selectionHeight
+        };
+        
+        selectionStarted = true;
+        updateCropSelectionDisplay();
     }
 
     /**
