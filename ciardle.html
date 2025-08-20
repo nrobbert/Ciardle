@@ -460,6 +460,25 @@
     #largeGuessedImage {
       height: 400px; /* Smaller enlarged image height on very small screens */
     }
+    
+    /* Mobile-specific table improvements */
+    #answerTable th, #answerTable td {
+      padding: 14px 8px; /* Increase minimum padding for better touch targets */
+      font-size: 0.95rem; /* Set consistent readable font size for mobile */
+      word-wrap: break-word; /* Allow long text to wrap */
+      hyphens: auto; /* Enable hyphenation for long words */
+    }
+    
+    #answerTable th {
+      font-size: 0.9rem; /* Slightly smaller header text */
+      letter-spacing: 0.05em; /* Reduce letter spacing for mobile */
+    }
+    
+    /* Improve tick/cross icon sizing for mobile */
+    .tick, .cross {
+      font-size: 1.1em; /* Slightly smaller icons for mobile */
+      margin-left: 4px; /* Reduce spacing */
+    }
   }
 </style>
 </head>
