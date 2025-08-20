@@ -352,12 +352,14 @@
     margin-left: auto;
     margin-right: auto;
     border: 1px solid #d0dce7;
+    overflow-x: auto; /* Enable horizontal scrolling on mobile */
   }
 
   #leaderboardTable {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
+    min-width: 500px; /* Ensure table maintains minimum width for readability */
   }
 
   #leaderboardTable th, #leaderboardTable td {
@@ -509,6 +511,18 @@
     }
     #largeGuessedImage {
       height: 400px; /* Smaller enlarged image height on very small screens */
+    }
+    
+    /* Leaderboard mobile improvements */
+    #leaderboardTable th, #leaderboardTable td {
+      padding: 8px 6px; /* Reduce padding for mobile */
+      font-size: 0.85rem; /* Smaller font size for mobile */
+      white-space: nowrap; /* Prevent text wrapping in cells */
+    }
+    
+    #leaderboardTable th {
+      font-size: 0.8rem; /* Even smaller header text */
+      font-weight: bold;
     }
   }
 </style>
